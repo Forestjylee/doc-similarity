@@ -13,6 +13,7 @@ class WordSegmenter(object):
     def __init__(self, stop_word_path="stopWords.txt"):
         self.stop_word_path = stop_word_path
         self.stop_word_list = self.get_stop_word_list(self.stop_word_path)
+        self.extend_word_list = [' ', '\n', '\xa0']    # 一些无法列在stopWord.txt中的停用词
 
     def get_stop_word_list(self, stop_word_path):
         stop_word_list = [line.strip() for line in open(self.stop_word_path, encoding='UTF-8').readlines()]
@@ -20,10 +21,10 @@ class WordSegmenter(object):
 
     def separate_text(self, text):
         text_seperated = jb.lcut(text)
-        return [word for word in text_seperated if word not in [' ', '\n', '\xa0']]
+        return [word for word in text_seperated if word not in self.extend_word_list]
 
     def filter_stop_word(self, text):
-        text_ = list(set(text) - set(self.stop_word_list))
+        text_ = [word for word in text if word not in self.stop_word_list]
         return text_
 
     def separate_artical(self, artical_generator, filter_stop_word=True):
