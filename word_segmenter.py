@@ -1,11 +1,12 @@
-import jieba as jb
-
 '''
 按照段落进行分词
 @:param  artical_generator
 @:param  stop_word_path
 by: Junyi
 '''
+import jieba as jb
+
+
 
 class WordSegmenter(object):
 

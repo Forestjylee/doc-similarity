@@ -1,11 +1,11 @@
-from docx import Document
-
 '''
 读取.docx文件
 @:param  artical_text
 @:param  artical_path
 by: Junyi
 '''
+from docx import Document
+
 
 
 class ArticalHandler(object):
