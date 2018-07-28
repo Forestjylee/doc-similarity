@@ -26,7 +26,8 @@ class SimilarityCalculator(object):
     # 读取所有文档的分词词组列表(从本地硬盘读出(开发时),从redis数据库读出(部署时))
     def get_docs_words(self):
         for artical in self.artical_handler.get_artical_generators():
-            artical_separated = self.word_segmenter.separate_artical_for_calculate(artical)     # TODO  部署时将从redis数据库读取分词词组
+            artical_separated = self.word_segmenter.separate_artical_for_calculate(artical)     # dev
+            # artical_separated = self.word_segmenter.read_from_redis_for_calculate()           # prod
             self.docs_words.append(artical_separated)
         return self.docs_words
 
@@ -41,7 +42,7 @@ class SimilarityCalculator(object):
         TFIDF_model = models.TfidfModel(self.get_docs_corpus())
         return TFIDF_model
 
-    # 生成所有文档的LSI模型
+    # 生成所有文档的LSI模型(未启用)
     def get_docs_LSI_model(self):
         LSI_model = models.LsiModel(corpus=self.get_docs_corpus(),
                                     id2word=corpora.Dictionary(self.docs_words),

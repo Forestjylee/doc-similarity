@@ -7,8 +7,11 @@ name = "pypi"
 jieba = "*"
 python-docx = "*"
 django = "==2.0.5"
-gensim = "*"
 redis = "*"
+django-redis = "*"
+pymysql = "*"
+gensim = "*"
+pandas = "*"
 
 [dev-packages]
 

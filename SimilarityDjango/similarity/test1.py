@@ -3,5 +3,7 @@ from similarity.word_segmenter import WordSegmenter
 import os
 
 if __name__ == '__main__':
-    artical_directory = os.path.join(os.path.abspath(".."), "test_doc")
-    print(os.listdir(artical_directory))
+    list1 = ["你好", "我好"]
+    str_list = str(list1)
+    list2 = eval(str_list)
+    print(type(list2))

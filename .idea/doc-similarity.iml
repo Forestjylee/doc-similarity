@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango/similarity" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango/SimilarityDjango" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango/SimilarityApp" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
