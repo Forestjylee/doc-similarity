@@ -1,7 +1,8 @@
 '''
 相似度计算模块
-使用算法:TF-IDF || LSI模型
-@:param artical_directory[文章分词列表]
+使用算法:TF-IDF(启用) || LSI模型(暂不使用)
+@:param artical_directory[文章分词列表文件夹路径](dev)
+@:param redis_daatabase[文章分词列表redis](prod)
 by: Junyi
 '''
 import os
