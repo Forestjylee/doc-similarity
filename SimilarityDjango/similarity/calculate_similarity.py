@@ -22,6 +22,7 @@ class SimilarityCalculator(object):
         self.artical_directory = artical_directory
         self.artical_handler = ArticalHandler(artical_directory=self.artical_directory)
         self.word_segmenter = WordSegmenter()
+        self.get_docs_words()
 
     # 读取所有文档的分词词组列表(从本地硬盘读出(开发时),从redis数据库读出(部署时))
     def get_docs_words(self):

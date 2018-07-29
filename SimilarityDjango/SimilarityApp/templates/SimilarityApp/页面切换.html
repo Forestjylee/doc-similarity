@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+  <style>
+  @import url(https://fonts.googleapis.com/css?family=Carter+One);
+input[type='radio'] {
+  display: none;
+}
+
+input[type='radio']#section1:checked ~ nav > label[for='section1'] {
+  background-color: white;
+}
+
+input[type='radio']#section1:checked ~ section:nth-of-type(1) {
+  z-index: 1;
+  top: 0;
+  transition: top 0.5s ease-in-out;
+  transition-delay: 0s;
+}
+
+input[type='radio']#section1:checked ~ .cover {
+  background-color: #eb9385;
+}
+
+input[type='radio']#section2:checked ~ nav > label[for='section2'] {
+  background-color: white;
+}
+
+input[type='radio']#section2:checked ~ section:nth-of-type(2) {
+  z-index: 1;
+  top: 0;
+  transition: top 0.5s ease-in-out;
+  transition-delay: 0s;
+}
+
+input[type='radio']#section2:checked ~ .cover {
+  background-color: #99c0bc;
+}
+
+input[type='radio']#section3:checked ~ nav > label[for='section3'] {
+  background-color: white;
+}
+
+input[type='radio']#section3:checked ~ section:nth-of-type(3) {
+  z-index: 1;
+  top: 0;
+  transition: top 0.5s ease-in-out;
+  transition-delay: 0s;
+}
+
+input[type='radio']#section3:checked ~ .cover {
+  background-color: #937782;
+}
+
+input[type='radio']#section4:checked ~ nav > label[for='section4'] {
+  background-color: white;
+}
+
+input[type='radio']#section4:checked ~ section:nth-of-type(4) {
+  z-index: 1;
+  top: 0;
+  transition: top 0.5s ease-in-out;
+  transition-delay: 0s;
+}
+
+input[type='radio']#section4:checked ~ .cover {
+  background-color: #2d4249;
+}
+
+.nav {
+  position: fixed;
+  z-index: 2;
+  right: 30px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+.nav__item {
+  width: 12px;
+  height: 12px;
+  display: block;
+  margin: 12px auto;
+  border: solid 2px white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.nav__item:hover {
+  background-color: white;
+}
+
+section {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  transition-delay: 0.5s;
+}
+
+section:nth-of-type(1) {
+  background: #eb9385;
+}
+
+section:nth-of-type(2) {
+  background: #99c0bc;
+}
+
+section:nth-of-type(3) {
+  background: #937782;
+}
+
+section:nth-of-type(4) {
+  background: #2d4249;
+}
+
+.cover {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  color: white;
+  font: 100% 'Carter One', cursive;
+}
+
+h1 {
+  font-size: 6em;
+}
+  </style>
+ </HEAD>
+
+ <BODY>
+  
+<!-- Inputs-->
+<input type="radio" name="item" checked="checked" id="section1"/>
+<input type="radio" name="item" id="section2"/>
+<input type="radio" name="item" id="section3"/>
+<input type="radio" name="item" id="section4"/>
+<!-- Navigation-->
+<nav class="nav">
+  <label class="nav__item" for="section1"></label>
+  <label class="nav__item" for="section2"></label>
+  <label class="nav__item" for="section3"></label>
+  <label class="nav__item" for="section4"></label>
+</nav>
+<!-- Sections-->
+<section>
+  <h1>One Page</h1>
+</section>
+<section>
+  <h1>Pure CSS</h1>
+</section>
+<section>
+  <h1>Smooth transition</h1>
+</section>
+<section>
+  <h1>@Ver_Qn</h1>
+</section>
+<!-- Fix the white space when scrolling two sections at the same time-->
+<div class="cover"></div>
+  <script>
+  // Not a single line of Javascript !
+
+/* TODO
+ * 1 - Fix z-index bug on edge/IE.
+ */
+  </script>
+ </BODY>
+</HTML>
