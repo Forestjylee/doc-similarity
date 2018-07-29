@@ -58,7 +58,7 @@ class ModuleAdmin(admin.ModelAdmin):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     # 列表页属性
-    list_display = ['name', 'account', 'unit','createtime']  # 数据显示的条目
+    list_display = ['id', 'name', 'account', 'unit','createtime']  # 数据显示的条目
     list_filter = ['name']         # 数据过滤字段
     search_fields = ['name']       # 搜索字段
     list_per_page = 10             # 分页(每几条分页)

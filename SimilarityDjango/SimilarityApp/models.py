@@ -34,7 +34,7 @@ class Teacher(models.Model):
 class UserRelation(models.Model):
 
     # 使用id而不用student外键是因为防止有学生的名字一样不容易区分
-    stu_id  = models.IntegerField(blank=True, verbose_name="学生id(选填)")                               # 学生id
+    stu_id  = models.IntegerField(verbose_name="学生id")                               # 学生id
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name="老师", null=True)      # 外键(学生所属的老师)
     def __str__(self):
         return '%s-%s'%(self.teacher, self.stu_id)    # 老师对应学生id
@@ -57,7 +57,7 @@ class Project(models.Model):
     name = models.CharField(max_length=50, verbose_name="项目名称")                            # 课程名称
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name="所属老师", null=True)    # 外键(课程所属老师|管理员)
     path = models.CharField(max_length=100)                                                   # 课程文件所在路径
-    end_date = models.DateField(blank=True, verbose_name="结束日期")                           # 课程结束日期
+    end_date = models.DateField(null=True, verbose_name="结束日期")                           # 课程结束日期
     createtime = models.DateTimeField(auto_now_add=True)                                      # 创建时间
     def __str__(self):
         return self.name
@@ -72,7 +72,7 @@ class Module(models.Model):
     description = models.CharField(max_length=200, verbose_name="子项目描述")                     # 单元描述
     path = models.CharField(max_length=100)                                                      # 单元所在路径
     filetype = models.CharField(max_length=20, default="doc|docx")                               # 文件类型
-    end_date = models.DateField(blank=True, verbose_name="截止日期")                              # 结束时间
+    end_date = models.DateField(null=True, verbose_name="截止日期")                              # 结束时间
     createtime = models.DateTimeField(auto_now_add=True)                                         # 创建时间
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name="所属项目", null=True)       # 外键(单元所属的课程)
     def __str__(self):
