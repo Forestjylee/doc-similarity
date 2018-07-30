@@ -26,6 +26,7 @@ class SimilarityCalculator(object):
 
     # 读取所有文档的分词词组列表(从本地硬盘读出(开发时),从redis数据库读出(部署时))
     def get_docs_words(self):
+        self.docs_words = []
         for artical in self.artical_handler.get_artical_generators():
             artical_separated = self.word_segmenter.separate_artical_for_calculate(artical)     # dev
             # artical_separated = self.word_segmenter.read_from_redis_for_calculate()           # prod
@@ -58,14 +59,29 @@ class SimilarityCalculator(object):
         TFIDF_similarity_calculator = similarities.MatrixSimilarity(corpus=list(TFIDF_model[docs_corpus()]))
         for doc_vectors in docs_corpus():
             doc_similarities = list(enumerate(TFIDF_similarity_calculator[TFIDF_model[doc_vectors]]))
-            yield doc_similarities
+            yield self.prettify(doc_similarities)
 
     # 得到每篇doc对应和其他doc的LSI相似度
     def get_docs_LSI_similarities(self):
         pass
 
+    @staticmethod
+    def prettify(doc_similarities):
+        pretty_doc_similarities = []
+        for each_similarity in doc_similarities:
+            data = {
+                'index':each_similarity[0],
+                'similarity':'%.2f'%(each_similarity[1]*100)
+            }
+            pretty_doc_similarities.append(data)
+        return pretty_doc_similarities
+
+
+
 if __name__ == '__main__':
-    sc = SimilarityCalculator(artical_directory=os.path.join(os.path.abspath(".."), "test_doc"))
+    sc = SimilarityCalculator(artical_directory=os.path.join(os.path.abspath("."), "test_doc"))
     sc.get_docs_words()
     for doc in sc.get_docs_TFIDF_similarities():
-        print(doc)
+        for i in doc:
+            print(i)
+        print('----------------------------------')

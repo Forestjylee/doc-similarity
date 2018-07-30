@@ -6,6 +6,7 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/SimilarityDjango/test_doc" />
+            <path value="file://$PROJECT_DIR$/SimilarityDjango/similarity/test_doc" />
           </resourceRoots>
         </entryData>
       </entry>

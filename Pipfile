@@ -12,7 +12,6 @@ django-redis = "*"
 pymysql = "*"
 gensim = "*"
 pandas = "*"
-django-simple-captcha = "*"
 
 [dev-packages]
 
