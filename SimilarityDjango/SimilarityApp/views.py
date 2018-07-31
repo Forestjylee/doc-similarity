@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from .models import Student, Teacher
 from .encryption import encrypt, decrypt
+from .recieve_file import recieve_stu_file, recieve_tea_file
 # Create your views here.
 
 
@@ -18,13 +20,24 @@ def home(request, role, user_id, username):
     if role == 'stu':
         student = get_object_or_404(Student, pk=user_id)
         if username == student.name:
-            return render(request, 'SimilarityApp/student.html', {'username':username})
+            if request.method == 'POST':
+                file_obj = request.FILES.get('send_file')      # 上传文件的文件名
+                #TODO 下面的teacher应传入项目所属老师的'姓名-账号名'[根据使用场景传入参数]
+                recieve_stu_file(file_obj, teacher=student, project='default_project', module='default_project', student='-'.join([student.name, student.account]))
+                return HttpResponse('OK')
+            else:
+                return render(request, 'SimilarityApp/student.html', {'username':username})
         else:
             return redirect('SimilarityApp:登录')
     elif role == 'tea':
         teacher = get_object_or_404(Teacher, pk=user_id)
         if username == teacher.name:
-            return render(request, 'SimilarityApp/teacher.html', {'username':username})
+            if request.method == 'POST':
+                file_obj = request.FILES.get('send_file')      # 上传文件的文件名
+                recieve_tea_file(file_obj, teacher_name_directory='-'.join([teacher.name,teacher.account]))
+                return HttpResponse('OK')
+            else:
+                return render(request, 'SimilarityApp/teacher.html', {'username':username})
         else:
             return redirect('SimilarityApp:登录')
 
