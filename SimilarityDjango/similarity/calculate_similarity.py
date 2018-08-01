@@ -17,7 +17,7 @@ from gensim import corpora, models, similarities
 
 class SimilarityCalculator(object):
 
-    def __init__(self, artical_directory):
+    def __init__(self, artical_directory=None):
         self.docs_words = []
         self.artical_directory = artical_directory
         self.artical_handler = ArticalHandler(artical_directory=self.artical_directory)

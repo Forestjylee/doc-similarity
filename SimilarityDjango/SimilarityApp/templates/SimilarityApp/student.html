@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
-    <title>学生主页</title>
+    <title>主页</title>
 </head>
 <body>
-    <h1>欢迎您,{{ username }}!</h1>
+    <h3>欢迎您,{{ username }}!</h3>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="send_file">

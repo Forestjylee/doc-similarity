@@ -4,10 +4,8 @@
 by: Junyi
 '''
 from docx import Document
-import redis
 import os
 
-# TODO 实现get_data_from_antiword(部署时)使用的默认读入方式
 
 class ArticalHandler(object):
 
@@ -39,6 +37,3 @@ class ArticalHandler(object):
                 for row in range(0, len(table.rows)):
                     for column in range(0, len(table.columns)):
                         yield table.cell(row, column).text
-
-    def get_word_from_antiword(self):
-        pass

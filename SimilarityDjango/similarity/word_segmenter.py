@@ -12,7 +12,7 @@ import redis
 class WordSegmenter(object):
 
     def __init__(self, stop_word_path="stopWords.txt"):
-        self.redis_handler = redis.Redis(host='localhost', port=6379, db=1)
+        self.redis_handler = redis.Redis(host='localhost', port=6379, db=5)
         self.stop_word_path = stop_word_path
         self.stop_word_list = self.get_stop_word_list(self.stop_word_path)
         self.extend_word_list = [' ', '\xa0', '\n', '\t']    # 一些无法列在stopWords.txt中的停用词

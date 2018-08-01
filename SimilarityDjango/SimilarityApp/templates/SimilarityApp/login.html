@@ -16,9 +16,9 @@
       <div class="login">
           <div class="login_logo"><a href="#"><img src="../../../static/images/login_logo.png" /></a></div>
           <div class="login_name">
-               <p>查重系统登录</p>
+               <p>文档管理系统登录</p>
           </div>
-          <form action="/login/" method="POST">
+          <form action="/login/" method="post">
               {% csrf_token %}
               <input name="username" type="text" value="用户名" onfocus="this.value=''" onblur="if(this.value==''){this.value='用户名'}">
               <span id="password_text" onclick="this.style.display='none';document.getElementById('password').style.display='block';document.getElementById('password').focus().select();" >密码</span>

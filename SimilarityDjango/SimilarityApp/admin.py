@@ -61,7 +61,7 @@ class StudentAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'account', 'unit','createtime']  # 数据显示的条目
     list_filter = ['name']         # 数据过滤字段
     search_fields = ['name']       # 搜索字段
-    list_per_page = 10             # 分页(每几条分页)
+    list_per_page = 15             # 分页(每几条分页)
 
     # 添加，修改数据页属性
     # fields = ['name','account','password',role_,'unit']    # 规定属性出现的先后顺序
@@ -78,7 +78,7 @@ class TeacherAdmin(admin.ModelAdmin):
     list_display = ['name', 'account', 'unit','createtime']  # 数据显示的条目
     list_filter = ['name']         # 数据过滤字段
     search_fields = ['name']       # 搜索字段
-    list_per_page = 10             # 分页(每几条分页)
+    list_per_page = 15             # 分页(每几条分页)
 
     # 添加，修改数据页属性
     # fields = ['name','account','password',role_,'unit']    # 规定属性出现的先后顺序
@@ -94,7 +94,7 @@ class UserRelationAdmin(admin.ModelAdmin):
     list_display = ['teacher','stu_id']   # 数据显示的条目
     list_filter = ['teacher']              # 数据过滤字段
     search_fields = ['teacher']            # 搜索字段
-    list_per_page = 10                     # 分页(每几条分页)
+    list_per_page = 20                     # 分页(每几条分页)
 
     # 添加，修改数据页属性
     fieldsets = [

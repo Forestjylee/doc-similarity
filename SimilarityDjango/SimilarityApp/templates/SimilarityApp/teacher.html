@@ -2,9 +2,39 @@
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
-    <title>老师主页</title>
+    <title>主页</title>
 </head>
 <body>
-    <h1>欢迎您,{{ username }}!</h1>
+    <h3>欢迎您,{{ username }}!</h3>
+    <table>
+        <thead>
+            <tr>
+				<th>工程名</th>
+				<th>截止时间</th>
+				<th>指导老师</th>
+				<th>所属单位</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in project_list %}
+            <tr>
+                <td><a href={{ project.url }}>{{ project.name }}</a></td>
+                <td>{{ project.end_date }}</td>
+                <td>{{ project.teacher.name }}</td>
+                <td>{{ project.teacher.unit }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form action="SimilarityApp/create_project.html">
+        <button type="submit">新建项目</button>
+    </form>
+    <h4>请选择Excel文件导入学生信息(至少要有"姓名","学号","班级"栏目):</h4>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="send_file">
+        <input type="submit">
+    </form>
+    <p>{{ upload_result }}</p>
 </body>
 </html>
