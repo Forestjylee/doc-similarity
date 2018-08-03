@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from .models import Student, Teacher, Project, ProjectUser, UserRelation, Module
 from .encryption import encrypt, decrypt
-from .recieve_file import recieve_stu_file, recieve_tea_file
+from .recieve_file import recieve_stu_file, recieve_tea_file, generate_stu_doc_directory, is_empty, update_project_name, delete_project_directory
 # Create your views here.
 
 
@@ -42,6 +42,7 @@ def home(request, role, user_id, username):
                 project_list = Project.objects.filter(teacher=teacher)
                 for project in project_list:
                     project.url = '/project/admin/{}/{}/'.format(project.id, encrypt(project.name))
+                    project.delete_url = '/delete/project/{}/{}/{}/'.format(project.id, encrypt(project.name), encrypt(teacher.name))
             except:
                 project_list = []
             if request.method == 'POST':
@@ -158,27 +159,83 @@ def edit_project(request, project_id, project_name):
                 project_new_name = request.POST['project_name']
                 project_end_date = request.POST['project_end_date']
                 if 'confirm' in request.POST:
+                    teacher = project.teacher
+                    update_project_name(teacher, project.name, project_new_name)    # 修改本地文件名
                     project.name = project_new_name
                     project.end_date = project_end_date
                     try:
                         project.save()
-                        return render(request, 'SimilarityApp/edit_project.html', {'edit_status':'修改成功!'})
+                        #return render(request, 'SimilarityApp/edit_project.html', {'edit_status':'修改成功!'})
+                        return redirect('SimilarityApp:老师项目管理', project_id=project_id, project_name=encrypt(project_new_name))
                     except:
                         return render(request, 'SimilarityApp.edit_project.html', {'edit_status':'修改失败!'})
                 if 'reset' in request.POST:
                     return render(request, 'SimilarityApp/edit_project.html')
             return render(request, 'SimilarityApp/edit_project.html')
     except:
-        return Http404("页面不存在!")
+        return Http404
 
 # TODO 管理子模块
 def admin_module(request, module_id, module_name):
-    return render(request, 'SimilarityApp/admin_module.html')
+    module = get_object_or_404(Module, pk=module_id)
+    try:
+        module_name = decrypt(module_name)
+        if module_name != module.name:
+            raise ValueError
+        try:
+            project = module.project
+            teacher = project.teacher
+            if request.method == 'POST':
+                pass
+            else:
+                project_user_list = ProjectUser.objects.filter(project=project)
+                student_list = [project_user.student for project_user in project_user_list]
+                for student in student_list:
+                    doc_directory = generate_stu_doc_directory(student, teacher, project.name, module.name)
+                    student.is_upload = '已提交' if not is_empty(doc_directory) else '未提交'
+                return render(request, 'SimilarityApp/admin_module.html', {'module_name':module_name, 'student_list':student_list})
+        except:
+            return render(request, 'SimilarityApp/admin_module.html')
+    except:
+        return Http404
 
-# TODO 使用子模块(提交作业)
+# TODO 使用子模块(提交作业)[提交已实现,分词存储部分未实现]
 def use_module(request, user_id, username, module_id, module_name):
-    module_name = decrypt(module_name)
-    return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name})
+    module = get_object_or_404(Module, pk=module_id)
+    student = get_object_or_404(Student, pk=user_id)
+    try:
+        module_name = decrypt(module_name)
+        username = decrypt(username)
+        if module_name != module.name or student.name != username:
+            raise ValueError
+        else:
+            project = module.project
+            teacher = project.teacher
+            if request.method == 'POST':
+                if 'send_extend_file' in request.FILES:
+                    file_obj = request.FILES.get('send_extend_file')
+                    try:
+                        recieve_stu_file(file_obj, teacher, project.name, module.name, student, is_doc=False)
+                        return render(request, 'SimilarityApp/module_user.html',  {'module_name':module_name, 'extend_upload_result':'附件上传成功!'})
+                    except:
+                        return render(request, 'SimilarityApp/module_user.html',  {'module_name':module_name, 'extend_upload_result':'附件上传失败!请稍后重试'})
+                if 'send_doc_file' in request.FILES:
+                    file_obj = request.FILES.get('send_doc_file')
+                    try:
+                        recieve_stu_file(file_obj, teacher, project.name, module.name, student, is_doc=True)
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档上传并读取成功!'})
+                    except TypeError:
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文件类型错误!不是doc|docx类型的文件'})
+                    except ConnectionRefusedError:
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档分词失败!请稍后重试'})
+                    except ValueError:
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档读取失败!请检查文件是否完整'})
+                    except Exception:
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档上传失败!请稍后重试'})
+            else:
+                return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name})
+    except:
+        return Http404
 
 # 创建项目界面
 def create_project(request, teacher_id, teacher_name):
@@ -247,3 +304,20 @@ def show_similarity(request, module_id, module_name):
 # TODO 显示计算相似度的结果(学生视角)
 def show_similarity_stu(request, module_id, module_name, username):
     return render(request, 'SimilarityApp/similarity_stu.html')
+
+def delete_project(request, project_id, project_name, teacher_name):
+    project = get_object_or_404(Project, pk=project_id)
+    try:
+        project_name = decrypt(project_name)
+        teacher_name = decrypt(teacher_name)
+        teacher = project.teacher
+        if project.name != project_name or teacher_name != teacher.name:
+            raise ValueError
+        else:
+            project_user_list = ProjectUser.objects.filter(project=project)
+            for project_user in project_user_list:
+                project_user.delete()
+            delete_project_directory(teacher, project_name)
+            project.delete()
+    finally:
+        return redirect('SimilarityApp:主页', role='tea', user_id=teacher.id, username=encrypt(teacher.name))

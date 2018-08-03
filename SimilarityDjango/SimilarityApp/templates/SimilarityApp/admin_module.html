@@ -5,14 +5,14 @@
     <title>管理子模块</title>
 </head>
 <body>
-    <h1>管理子模块</h1>
-    <table border="1" width="60%">
+    <h1 style="margin-left: 150px">提交情况:</h1>
+    <table style="margin-left: 200px;margin-bottom: 30px" border="3" width="70%">
         <thead>
             <tr>
-				<th>子模块名</th>
+				<th>子模块</th>
 				<th>学生</th>
+                <th>班级</th>
                 <th>提交情况</th>
-				<th>班级</th>
             </tr>
         </thead>
         <tbody>
@@ -20,8 +20,8 @@
             <tr>
                 <td align="center">{{ module_name }}</td>
                 <td align="center">{{ student.name }}</td>
-                <td align="center">{{ student.is_upload }}</td>
                 <td align="center">{{ student.unit }}</td>
+                <td align="center">{{ student.is_upload }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -17,4 +17,5 @@ urlpatterns = [
     path('create_module/<project_id>/<project_name>/', views.create_module, name='新建模块'),
     path('module/admin/<module_id>/<module_name>/', views.admin_module, name='module管理'),
     path('module/user/<user_id>/<username>/<module_id>/<module_name>/', views.use_module, name='module使用'),
+    path('delete/project/<project_id>/<project_name>/<teacher_name>/', views.delete_project, name='删除项目'),
 ]

@@ -5,16 +5,19 @@
     <title>创建模块</title>
 </head>
 <body>
-    <h1>创建建子模块</h1>
+    <h1>创建子模块</h1>
     <form action="" method="post">
         {% csrf_token %}
-        <label>请输入子模块的名称:</label>
-        <input type="text" name="module_name">
-        <label>请输入子模块简要概述:</label>
-        <input type="text" name="module_description">
-        <label>请输入子模块的截至日期(选填):</label>
-        <input type="date" name="module_end_date">
-        <button type="submit" name="confirm">确认</button>
+        <label style="margin-bottom: 12px;margin-left: 8px">请输入子模块的名称:</label>
+        <input style="margin-bottom: 12px" type="text" name="module_name">
+        <div></div>
+        <label style="margin-bottom: 12px;margin-left: 8px">请输入子模块简要概述:</label>
+        <input style="margin-bottom: 12px" type="text" name="module_description">
+        <div></div>
+        <label style="margin-bottom: 14px;margin-left: 8px">请输入子模块的截至日期(选填):</label>
+        <input style="margin-bottom: 14px" type="date" name="module_end_date">
+        <div></div>
+        <button style="margin-left: 60px;margin-right: 70px" type="submit" name="confirm">确认</button>
         <button type="submit" name="reset">重置</button>
     </form>
     <p>{{ create_status }}</p>

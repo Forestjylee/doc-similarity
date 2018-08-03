@@ -5,13 +5,7 @@
     <title>项目管理</title>
 </head>
 <body>
-    <form action="" method="post" onsubmit="return">
-        {% csrf_token %}
-        <button type="submit" name="admin_user">编辑参与学生</button>
-        <button type="submit" name="edit_project">修改项目信息</button>
-        <button type="submit" name="create_module">新建模块</button>
-    </form>
-    <table border="3" width="100%">
+    <table style="margin-top: 50px" border="3" width="100%">
         <thead>
             <tr>
 				<th>项目</th>
@@ -33,5 +27,11 @@
             {% endfor %}
         </tbody>
     </table>
+    <form style="margin-top: 30px;margin-left: 200px" action="" method="post" onsubmit="return">
+        {% csrf_token %}
+        <button style="margin-right: 70px" type="submit" name="admin_user">编辑参与学生</button>
+        <button style="margin-right: 70px" type="submit" name="edit_project">修改项目信息</button>
+        <button type="submit" name="create_module">新建子模块</button>
+    </form>
 </body>
 </html>

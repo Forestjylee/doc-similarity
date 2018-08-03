@@ -6,30 +6,28 @@
 by: Junyi
 '''
 import os
-from artical_handler import ArticalHandler
-from word_segmenter import WordSegmenter
+from .artical_handler import ArticalHandler
+from .word_segmenter import WordSegmenter
 from gensim import corpora, models, similarities
 
 
-#  接收 word_segmenter.py 分词得到的词语列表，运用gensim建立所有文档的公共词库
+#  接收 divide_word.py 分词得到的词语列表，运用gensim建立所有文档的公共词库
 #  运用 SimilarityCalculator.get_docs_TFIDF_similarities()即可得到每一个文档与其他文档之间的相似度的迭代器
 
 
 class SimilarityCalculator(object):
 
-    def __init__(self, artical_directory=None):
+    def __init__(self, artical_names_list):
         self.docs_words = []
-        self.artical_directory = artical_directory
-        self.artical_handler = ArticalHandler(artical_directory=self.artical_directory)
+        self.artical_names_list = artical_names_list
         self.word_segmenter = WordSegmenter()
         self.get_docs_words()
 
     # 读取所有文档的分词词组列表(从本地硬盘读出(开发时),从redis数据库读出(部署时))
     def get_docs_words(self):
         self.docs_words = []
-        for artical in self.artical_handler.get_artical_generators():
-            artical_separated = self.word_segmenter.separate_artical_for_calculate(artical)     # dev
-            # artical_separated = self.word_segmenter.read_from_redis_for_calculate()           # prod
+        for artical_name in self.artical_names_list:
+            artical_separated = self.word_segmenter.read_from_redis_for_calculate(artical_name=artical_name)           # prod
             self.docs_words.append(artical_separated)
         return self.docs_words
 

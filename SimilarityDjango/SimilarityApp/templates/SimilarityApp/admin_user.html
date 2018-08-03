@@ -5,20 +5,21 @@
     <title>管理参与学生</title>
 </head>
 <body>
-    <h4>请选择Excel文件快速导入学生信息(至少要有"姓名","学号","班级"栏目):</h4>
-    <form action="" method="post" enctype="multipart/form-data">
+    <h4 style="margin-left: 180px">请选择Excel文件快速导入学生信息(至少要有"姓名","学号","班级"栏目):</h4>
+    <form style="margin-left: 190px" action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="send_file">
         <input type="submit">
     </form>
-    <p>{{ upload_result }}</p>
-    <table border="3" width="60%">
+    <p style="margin-left: 50px">{{ upload_result }}</p>
+    <table style="margin-left: 200px" border="3" width="60%">
         <thead>
             <tr>
 				<th>项目名</th>
 				<th>学生</th>
 				<th>班级</th>
                 <th>状态</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,7 @@
                 <td align="center">{{ student.name }}</td>
                 <td align="center">{{ student.unit }}</td>
                 <td align="center">已加入</td>
+                <td align="center"><a href="{{ delete_url }}">移出</a></td>
             </tr>
             {% endfor %}
         </tbody>

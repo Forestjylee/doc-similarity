@@ -2,17 +2,46 @@
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
-    <title>创建新工程</title>
+    <title>创建新项目</title>
+    <style>
+        /*标题背景*/
+        .rgba{
+            background-color: rgba(30,144,255,0.7);
+            height: 90px;
+        }
+        /*标题*/
+        h1{
+            margin-bottom: 45px;
+            font-size: 38px;
+            font-family: "STKaiti",serif;
+            font-weight: bold;
+            color: floralwhite;
+
+        }
+        .text{
+            text-align: center;
+            letter-spacing: 30px;
+            line-height: 80px;
+        }
+
+        .high{
+            line-height: 25px;
+        }
+    </style>
+
 </head>
 <body>
-    <h1>创建项目</h1>
-    <form action="" method="post">
+    <h1 class="rgba text">创建项目</h1>
+    <form  style="margin-left: 100px" class=high  action="" method="post">
         {% csrf_token %}
-        <label>请输入项目的名称:</label>
-        <input type="text" name="project_name">
-        <label>请输入项目的截至日期(选填):</label>
-        <input type="date" name="project_end_date">
-        <button type="submit" name="confirm">确认</button>
+        <label style="margin-bottom: 20px;margin-left: 8px">请输入项目的名称:</label>
+        <input style="margin-bottom: 20px" type="text" name="project_name">
+
+        <div></div>
+        <label style="margin-bottom: 20px;margin-left: 8px">请输入项目的截至日期(选填):</label>
+        <input style="margin-bottom: 20px" type="date" name="project_end_date">
+        <div></div>
+        <button  style="margin-left: 60px;margin-right: 70px" type="submit" name="confirm">确认</button>
         <button type="submit" name="reset">重置</button>
     </form>
     <p>{{ create_status }}</p>

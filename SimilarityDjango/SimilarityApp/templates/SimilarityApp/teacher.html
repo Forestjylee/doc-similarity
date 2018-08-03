@@ -53,13 +53,14 @@
 <body>
     <h3>欢迎您,{{ username }}!</h3>
    
-    <table width="100%" style="margin-bottom: 40px">
+    <table border="3" width="100%" style="margin-bottom: 40px;margin-top: 60px">
         <thead >
             <tr>
 				<th>项目名</th>
 				<th>截止时间</th>
 				<th>指导老师</th>
 				<th>所属单位</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -69,6 +70,7 @@
                 <td align="center">{{ project.end_date }}</td>
                 <td align="center">{{ project.teacher.name }}</td>
                 <td align="center">{{ project.teacher.unit }}</td>
+                <td align="center"><a href="{{ project.delete_url }}">删除</a></td>
             </tr>
             {% endfor %}
         </tbody>

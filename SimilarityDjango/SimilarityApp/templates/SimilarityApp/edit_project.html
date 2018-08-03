@@ -6,15 +6,17 @@
 </head>
 <body>
     <h1>修改项目信息</h1>
-    <form action="" method="post">
+    <form style="margin-left: 100px" action="" method="post">
         {% csrf_token %}
-        <label>请输入项目的新名称:</label>
-        <input type="text" name="project_name">
-        <label>请输入项目的截至日期(选填):</label>
-        <input type="date" name="project_end_date">
-        <button type="submit" name="confirm">确认</button>
-        <button type="submit" name="reset">重置</button>
+        <label style="margin-bottom: 20px;margin-left: 8px">请输入项目的新名称:</label>
+        <input style="margin-bottom: 20px" type="text" name="project_name">
+        <div></div>
+        <label style="margin-bottom: 20px;margin-left: 8px">请输入项目的截至日期(选填):</label>
+        <input style="margin-bottom: 20px" type="date" name="project_end_date">
+        <div></div>
+        <button style="margin-left: 60px;margin-right: 70px" type="submit" name="confirm">确认</button>
+        <button style="margin-left: 60px" type="submit" name="reset">重置</button>
     </form>
-    <p>{{ edit_status }}</p>
+    <p style="margin-left: 140px">{{ edit_status }}</p>
 </body>
 </html>

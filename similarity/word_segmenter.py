@@ -51,3 +51,7 @@ class WordSegmenter(object):
     def read_from_redis_for_calculate(self, artical_name):
         artical_separated = self.redis_handler.get(name=artical_name)
         return eval(artical_separated)
+
+    # 判断一个元素是否存在redis表中
+    def is_in_redis(self, artical_name):
+        return self.redis_handler.exists(name=artical_name)

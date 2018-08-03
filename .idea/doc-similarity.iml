@@ -3,13 +3,21 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/similarity" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango/similarity" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango/SimilarityDjango" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/similarity-kernal" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango/SimilarityApp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/SimilarityDjango" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/SimilarityDjango/SimilarityApp/templates" />
+      </list>
+    </option>
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />
