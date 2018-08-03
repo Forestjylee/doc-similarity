@@ -2,22 +2,17 @@
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
-    <title>项目管理</title>
+    <title>查看项目</title>
 </head>
 <body>
-    <form action="" method="post" onsubmit="return">
-        {% csrf_token %}
-        <button type="submit" name="admin_user">编辑参与学生</button>
-        <button type="submit" name="edit_project">修改项目信息</button>
-        <button type="submit" name="create_module">新建模块</button>
-    </form>
+    <h2>项目[{{ project_name }}]中的模块:</h2>
     <table border="3" width="100%">
         <thead>
             <tr>
 				<th>项目</th>
 				<th>子模块</th>
 				<th>截止日期</th>
-				<th>创建时间</th>
+				<th>布置时间</th>
                 <th></th>
             </tr>
         </thead>

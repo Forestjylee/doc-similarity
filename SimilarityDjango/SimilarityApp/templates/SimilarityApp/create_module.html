@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="UTF-8">
+    <title>创建模块</title>
+</head>
+<body>
+    <h1>创建建子模块</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label>请输入子模块的名称:</label>
+        <input type="text" name="module_name">
+        <label>请输入子模块简要概述:</label>
+        <input type="text" name="module_description">
+        <label>请输入子模块的截至日期(选填):</label>
+        <input type="date" name="module_end_date">
+        <button type="submit" name="confirm">确认</button>
+        <button type="submit" name="reset">重置</button>
+    </form>
+    <p>{{ create_status }}</p>
+</body>
+</html>

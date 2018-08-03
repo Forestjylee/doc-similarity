@@ -2,19 +2,19 @@
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
-    <title>创建新工程</title>
+    <title>修改项目信息</title>
 </head>
 <body>
-    <h1>创建项目</h1>
+    <h1>修改项目信息</h1>
     <form action="" method="post">
         {% csrf_token %}
-        <label>请输入项目的名称:</label>
+        <label>请输入项目的新名称:</label>
         <input type="text" name="project_name">
         <label>请输入项目的截至日期(选填):</label>
         <input type="date" name="project_end_date">
         <button type="submit" name="confirm">确认</button>
         <button type="submit" name="reset">重置</button>
     </form>
-    <p>{{ create_status }}</p>
+    <p>{{ edit_status }}</p>
 </body>
 </html>

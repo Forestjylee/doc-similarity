@@ -85,7 +85,7 @@
 
 #### (2)similarity[相似度计算模块]
 
-####          TF-IDF(Term Frequency-Inverse Document Frequency词频-逆文档频率)算法
+####          >TF-IDF(Term Frequency-Inverse Document Frequency词频-逆文档频率)算法<
 
 #### 
 

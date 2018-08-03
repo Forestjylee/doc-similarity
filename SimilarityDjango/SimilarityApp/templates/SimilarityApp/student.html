@@ -6,10 +6,26 @@
 </head>
 <body>
     <h3>欢迎您,{{ username }}!</h3>
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="send_file">
-        <input type="submit">
-    </form>
+    <h4>您参与的项目:</h4>
+    <table width="80%">
+        <thead>
+            <tr>
+				<th>项目名</th>
+                <th>指导老师</th>
+                <th>所属单位</th>
+				<th>截止时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in project_list %}
+            <tr>
+                <td align="center"><a href={{ project.url }}>{{ project.name }}</a></td>
+                <td align="center">{{ project.teacher.name }}</td>
+                <td align="center">{{ project.teacher.unit }}</td>
+                <td align="center">{{ project.end_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

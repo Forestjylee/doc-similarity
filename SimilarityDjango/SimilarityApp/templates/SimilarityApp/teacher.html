@@ -1,15 +1,62 @@
 <!DOCTYPE html>
 <html lang="zh-hans">
 <head>
-    <meta charset="UTF-8">
-    <title>主页</title>
+	<meta charset="UTF-8">
+	<title>主页</title>
+
+    <style>
+    h3{
+    	font-weight: 700;
+    	font-size: 28px;
+    	font-family: "微软雅黑";
+
+
+    }
+
+    h4{
+    	color: black;
+    	margin-top: 60px;
+    	font-size: 20px;
+    }
+    
+	.createproject{
+		padding:10px 550px 10px 550px;
+		border-top:2px solid gray;
+		border-left:2px solid gray;
+		border-right:2px solid gray;
+		background-color: skyblue
+         
+	}
+
+    .zj{
+        letter-spacing: 20px;
+        font-size: 18px;
+    }
+
+    a:hover{               /*链接变色*/
+    	color: red;
+    } 
+
+    .fontstyle{
+    	font-style: italic
+    }
+
+    .margin-top{
+    	40px;
+    }
+
+    	
+    </style>
+
 </head>
+
 <body>
     <h3>欢迎您,{{ username }}!</h3>
-    <table>
-        <thead>
+   
+    <table width="100%" style="margin-bottom: 40px">
+        <thead >
             <tr>
-				<th>工程名</th>
+				<th>项目名</th>
 				<th>截止时间</th>
 				<th>指导老师</th>
 				<th>所属单位</th>
@@ -18,23 +65,20 @@
         <tbody>
             {% for project in project_list %}
             <tr>
-                <td><a href={{ project.url }}>{{ project.name }}</a></td>
-                <td>{{ project.end_date }}</td>
-                <td>{{ project.teacher.name }}</td>
-                <td>{{ project.teacher.unit }}</td>
+                <td align="center"><a href={{ project.url }}>{{ project.name }}</a></td>
+                <td align="center">{{ project.end_date }}</td>
+                <td align="center">{{ project.teacher.name }}</td>
+                <td align="center">{{ project.teacher.unit }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <form action="SimilarityApp/create_project.html">
-        <button type="submit">新建项目</button>
-    </form>
-    <h4>请选择Excel文件导入学生信息(至少要有"姓名","学号","班级"栏目):</h4>
-    <form action="" method="post" enctype="multipart/form-data">
+
+    <form action="" method="post" onsubmit="return">
         {% csrf_token %}
-        <input type="file" name="send_file">
-        <input type="submit">
+        <button style="margin-left: 120px" class="createproject hover fontstyle zj"  type="submit" name="create_project">新建项目</button>
     </form>
-    <p>{{ upload_result }}</p>
+
+
 </body>
 </html>

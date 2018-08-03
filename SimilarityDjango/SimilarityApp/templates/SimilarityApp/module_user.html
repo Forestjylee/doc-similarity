@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="UTF-8">
+    <title>提交</title>
+</head>
+<body>
+    <h2>模块[{{ module_name }}]提交情况:</h2>
+    <h4>请选择要上传的附件:</h4>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="send_extend_file">
+        <input type="submit">
+    </form>
+    <h4>请选择要上传的文档文件(doc|docx):</h4>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="send_doc_file">
+        <input type="submit">
+    </form>
+</body>
+</html>

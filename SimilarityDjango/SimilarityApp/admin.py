@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 # 自定义管理页面(管理数据库等)
 
-from .models import Student, UserRelation, Project, Module, Teacher
+from .models import Student, UserRelation, Project, Module, Teacher, ProjectUser
 
 
 
@@ -91,7 +91,7 @@ class TeacherAdmin(admin.ModelAdmin):
 @admin.register(UserRelation)
 class UserRelationAdmin(admin.ModelAdmin):
     # 列表页属性
-    list_display = ['teacher','stu_id']   # 数据显示的条目
+    list_display = ['teacher','student']   # 数据显示的条目
     list_filter = ['teacher']              # 数据过滤字段
     search_fields = ['teacher']            # 搜索字段
     list_per_page = 20                     # 分页(每几条分页)
@@ -99,6 +99,22 @@ class UserRelationAdmin(admin.ModelAdmin):
     # 添加，修改数据页属性
     fieldsets = [
         ("老师", {"fields":['teacher']}),
-        ("学生id", {"fields":['stu_id']})
+        ("学生", {"fields":['student']})
+    ]  # 给属性分组,然后按顺序显示
+    # 注意:fields和fieldsets不能同时使用
+
+
+@admin.register(ProjectUser)
+class ProjectAdmin(admin.ModelAdmin):
+    # 列表页属性
+    list_display = ['project','student']   # 数据显示的条目
+    list_filter = ['project']              # 数据过滤字段
+    search_fields = ['project']            # 搜索字段
+    list_per_page = 30                     # 分页(每几条分页)
+
+    # 添加，修改数据页属性
+    fieldsets = [
+        ("项目", {"fields":['project']}),
+        ("学生", {"fields":['student']})
     ]  # 给属性分组,然后按顺序显示
     # 注意:fields和fieldsets不能同时使用

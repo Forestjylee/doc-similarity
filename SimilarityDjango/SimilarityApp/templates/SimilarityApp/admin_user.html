@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="UTF-8">
+    <title>管理参与学生</title>
+</head>
+<body>
+    <h4>请选择Excel文件快速导入学生信息(至少要有"姓名","学号","班级"栏目):</h4>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="send_file">
+        <input type="submit">
+    </form>
+    <p>{{ upload_result }}</p>
+    <table border="3" width="60%">
+        <thead>
+            <tr>
+				<th>项目名</th>
+				<th>学生</th>
+				<th>班级</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student_list %}
+            <tr>
+                <td align="center">{{ project_name }}</td>
+                <td align="center">{{ student.name }}</td>
+                <td align="center">{{ student.unit }}</td>
+                <td align="center">已加入</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

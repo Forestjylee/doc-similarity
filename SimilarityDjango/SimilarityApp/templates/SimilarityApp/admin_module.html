@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="UTF-8">
+    <title>管理子模块</title>
+</head>
+<body>
+    <h1>管理子模块</h1>
+    <table border="1" width="60%">
+        <thead>
+            <tr>
+				<th>子模块名</th>
+				<th>学生</th>
+                <th>提交情况</th>
+				<th>班级</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student_list %}
+            <tr>
+                <td align="center">{{ module_name }}</td>
+                <td align="center">{{ student.name }}</td>
+                <td align="center">{{ student.is_upload }}</td>
+                <td align="center">{{ student.unit }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

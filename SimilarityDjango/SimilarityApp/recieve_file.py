@@ -19,12 +19,15 @@ import pandas as pd
 import os
 import subprocess
 import redis
-from .models import UserRelation, Student
+from .models import UserRelation, Student, ProjectUser
 
 # TODO 收到一个doc就分词并存储进redis数据库中
 def recieve_stu_file(file_object, teacher, project, module, student, is_doc=False):
+    file_type = os.path.splitext(file_object.name)[-1]
     file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher),project),module),student)
     if is_doc is True:     # 如果文件是doc|docx文件
+        if file_type != '.doc' and file_type != '.docx':
+            raise TypeError
         file_directory = os.path.join(file_directory, 'docs')
     else:
         file_directory = os.path.join(file_directory, 'extends')
@@ -34,9 +37,9 @@ def recieve_stu_file(file_object, teacher, project, module, student, is_doc=Fals
         for chunk in file_object.chunks():
             f.write(chunk)
 
-def recieve_tea_file(file_object, teacher):
+def recieve_tea_file(file_object, teacher, project):
     file_type = os.path.splitext(file_object.name)[-1]
-    if file_type != '.xlsx' and file_type != 'xls':
+    if file_type != '.xlsx' and file_type != '.xls':
         raise TypeError
     teacher_info = '{}-{}'.format(teacher.name,teacher.account)
     file_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'), teacher_info), 'students_info')
@@ -46,17 +49,17 @@ def recieve_tea_file(file_object, teacher):
         for chunk in file_object.chunks():
             f.write(chunk)
     try:
-        update_student_info(file_path=file_path, teacher=teacher)
+        update_student_info(file_path=file_path, teacher=teacher, project=project)
     except:
         raise ValueError
 
-# 读取上传的Excel文件,将文件中的信息同步到数据库中(student表,user_relation表)[经过测试,可以正常运行]
-def update_student_info(file_path, teacher):
+# 读取上传的Excel文件,将文件中的信息同步到数据库中(student表,user_relation表,project_user表)[经过测试,可以正常运行]
+def update_student_info(file_path, teacher, project):
     student_info = pd.read_excel(file_path)      # student_info type->DataFrame
     student_name, student_account, student_unit = list(student_info['姓名']), list(student_info['学号']), list(student_info['班级'])
     for name, account, unit in zip(student_name, student_account, student_unit):
         try:
-            Student.objects.get(account=account)    # 报出DonotExist错误才创建用户
+            student = Student.objects.get(account=account)    # 报出DonotExist错误才创建用户
         except:
             student = Student()
             student.name = name
@@ -64,10 +67,20 @@ def update_student_info(file_path, teacher):
             student.password = student.account[-6:]    # init password is account[-6:]
             student.unit = unit
             student.save()
+        try:
+            relation = UserRelation.objects.get(student=student, teacher=teacher)
+        except:
             relation = UserRelation()
-            relation.stu_id = student.id
+            relation.student = student
             relation.teacher = teacher
             relation.save()
+        try:
+            project_user = ProjectUser.objects.get(project=project, student=student)
+        except:
+            project_user = ProjectUser()
+            project_user.project = project
+            project_user.student = student
+            project_user.save()
 
 
 def get_content_from_antiword(antiword_path, doc_file_path):

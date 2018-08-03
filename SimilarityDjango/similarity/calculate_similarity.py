@@ -77,11 +77,11 @@ class SimilarityCalculator(object):
         return pretty_doc_similarities
 
 
-
 if __name__ == '__main__':
     sc = SimilarityCalculator(artical_directory=os.path.join(os.path.abspath("."), "test_doc"))
     sc.get_docs_words()
-    for doc in sc.get_docs_TFIDF_similarities():
+    for index, doc in enumerate(sc.get_docs_TFIDF_similarities()):
+        print('文档{}与其他文档对比结果:'.format(index))
         for i in doc:
             print(i)
         print('----------------------------------')
