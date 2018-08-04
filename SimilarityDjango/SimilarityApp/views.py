@@ -26,15 +26,9 @@ def home(request, role, user_id, username):
                 project_list = [project_user.project for project_user in project_user_list]
                 for project in project_list:
                     project.url = '/project/user/{}/{}/{}/'.format(student.id, encrypt(student.name), encrypt(project.name))
+                return render(request, 'SimilarityApp/student.html', {'username':username, 'project_list':project_list})
             except:
                 return render(request, 'SimilarityApp/student.html', {'username':username})
-            if request.method == 'POST':
-                file_obj = request.FILES.get('send_file')      # 上传文件的文件名
-                #TODO 下面的teacher应传入项目所属老师的'姓名-账号名'[根据使用场景传入参数]
-                recieve_stu_file(file_obj, teacher='何老师-123456', project='default_project', module='default_project', student='{}-{}'.format(student.name, student.account))
-                return HttpResponse('OK')
-            else:
-                return render(request, 'SimilarityApp/student.html', {'username':username, 'project_list':project_list})
         else:
             return redirect('SimilarityApp:登录')
     elif role == 'tea':
@@ -201,7 +195,7 @@ def admin_module(request, module_id, module_name):
     except:
         return Http404
 
-
+# 用户文档和附件,只接受docx文件，并分词存储进入redis中
 def use_module(request, user_id, username, module_id, module_name):
     module = get_object_or_404(Module, pk=module_id)
     student = get_object_or_404(Student, pk=user_id)

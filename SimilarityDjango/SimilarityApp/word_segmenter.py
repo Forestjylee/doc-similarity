@@ -7,7 +7,7 @@ by: Junyi
 import jieba as jb
 import redis
 
-# TODO 实现save_to_redis(部署时)将分词的结果保存至redis数据库
+# save_to_redis(部署时)将分词的结果保存至redis数据库
 
 class WordSegmenter(object):
 

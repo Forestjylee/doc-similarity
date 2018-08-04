@@ -18,7 +18,6 @@
 import pandas as pd
 import os
 import shutil
-import subprocess
 import redis
 from .models import UserRelation, Student, ProjectUser
 from .encryption import encrypt
@@ -100,9 +99,10 @@ def update_student_info(file_path, teacher, project):
             project_user.student = student
             project_user.save()
 
-def get_content_from_antiword(antiword_path, doc_file_path):
-    content = subprocess.check_output([antiword_path, doc_file_path])
-    #TODO antiword返回的content的格式有待确认
+# 本版本不使用antiword
+# def get_content_from_antiword(antiword_path, doc_file_path):
+#     content = subprocess.check_output([antiword_path, doc_file_path])
+#     # antiword返回的content的格式有待确认
 
 # 生成一个文件夹路径，方便接下来判断目录是否为空，从而判断用户是否提交了文件
 def generate_stu_doc_directory(student, teacher, project, module):
