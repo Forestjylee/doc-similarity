@@ -3,7 +3,7 @@
 # """
 # 本文件定义接收用户上传文件的方法和处理方法(与MySql,redis数据库交互)
 # 学生上传的源码(压缩包)文件保存在[根目录(和Django项目同级)\upload_data\老师姓名\项目名称\模块名称\学生名称(姓名-账号名)\extends\]路径下
-# 学生上传的doc|docx文件保存在[根目录(和Django项目同级)\upload_data\老师姓名\项目名称\模块名称\学生名称\docs]路径下
+# 学生上传的docx文件保存在[根目录(和Django项目同级)\upload_data\老师姓名\项目名称\模块名称\学生名称\docs]路径下
 # 老师上传的文件保存在[根目录(和Django项目同级)\upload_data\老师姓名\students_info\]路径下(老师上传的是学生名单文件(Excel格式))
 # @:param  file_object  是request.FILES.get(<input>的name标签)得到的对象,用于获取文件名字和文件数据流
 # @:param  project  是文件所属项目的*名称*,用于创建项目文件夹
@@ -13,15 +13,15 @@
 # @:param  is_doc  (Boolean type)判断是否是doc类型的文件
 # """
 
-# TODO 实现get_data_from_antiword(部署时)使用的默认读入方式
+# 不适用antiword进行读取,限制用户只能上传docx类型文件
 
-import jieba as jb
 import pandas as pd
 import os
+import shutil
 import subprocess
 import redis
-from docx import Document
 from .models import UserRelation, Student, ProjectUser
+from .encryption import encrypt
 from .artical_handler import ArticalHandler
 from .word_segmenter import WordSegmenter
 
@@ -32,9 +32,10 @@ def recieve_stu_file(file_object, teacher, project, module, student, is_doc=Fals
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info)
     if is_doc is True:     # 如果文件是doc|docx文件
-        if file_type != '.doc' and file_type != '.docx':
+        if file_type != '.docx':
             raise TypeError
         file_directory = os.path.join(file_directory, 'docs')
+        shutil.rmtree(file_directory, ignore_errors=True)
     else:
         file_directory = os.path.join(file_directory, 'extends')
     os.makedirs(file_directory, exist_ok=True)
@@ -99,7 +100,6 @@ def update_student_info(file_path, teacher, project):
             project_user.student = student
             project_user.save()
 
-
 def get_content_from_antiword(antiword_path, doc_file_path):
     content = subprocess.check_output([antiword_path, doc_file_path])
     #TODO antiword返回的content的格式有待确认
@@ -109,6 +109,13 @@ def generate_stu_doc_directory(student, teacher, project, module):
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info),'docs')
+    return file_directory
+
+# 生成一个文件夹路径，方便接下来判断目录是否为空，从而判断用户是否提交了附件
+def generate_stu_extend_directory(student, teacher, project, module):
+    student_info = '{}-{}'.format(student.name, student.account)
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info),'extends')
     return file_directory
 
 # 判断目录是否为空
@@ -130,9 +137,33 @@ def update_project_name(teacher, project_old_name, project_new_name):
 def delete_project_directory(teacher, project_name):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name)
-    try:
-        os.removedirs(directory)
-    except:
-        pass
+    shutil.rmtree(directory, ignore_errors=True)
 
+def delete_extends_directory(teacher, student, project_name, module_name):
+    file_directory = generate_stu_extend_directory(student,teacher, project_name, module_name)
+    shutil.rmtree(file_directory, ignore_errors=True)
+
+
+def get_filename(file_path):
+    if os.path.exists(file_path):
+        filename = os.path.split(file_path)[-1]
+        return filename
+    else:
+        return None
+
+def get_filelist(directory_path, file_type, user_id, module_id):
+    try:
+        file_list = []
+        file_path_list = os.listdir(directory_path)
+        for file_path in file_path_list:
+            file_path = os.path.join(directory_path, file_path)
+            filename = get_filename(file_path=file_path)
+            file = {
+                'filename' : filename,
+                'download_url' : '/download/single/{}/{}/{}/{}/'.format(file_type, user_id, module_id, encrypt(filename))
+            }
+            file_list.append(file)
+        return file_list
+    except:
+        return []
 ##########################################################################################

@@ -93,9 +93,9 @@
 
 ### 1.jieba(分词核心库)
 
-### 2.python-docx(docx文档解析库)
+### 2.python-docx(docx文档解析库)[√目前只支持docx文档]
 
-### 3.antiword(doc文档解析工具)
+### 3.antiword(doc文档解析工具)[不启用]
 
 ### 4.gensim(相似度计算包)
 

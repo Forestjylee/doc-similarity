@@ -19,8 +19,6 @@ def decrypt(encrypted_string):
     return str(source_string, encoding='utf-8')
 
 if __name__ == '__main__':
-    source_string = "李俊仪"
-    tar = encrypt(source_string)
-    print(tar)
-    back = decrypt(tar)
+    source_string = "5a6e6aqMMeKAlOi+k+ayueeuoemBk+mXrumimC5kb2N4"
+    back = decrypt(source_string)
     print(back)

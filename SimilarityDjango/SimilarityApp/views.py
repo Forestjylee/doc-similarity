@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.utils.encoding import escape_uri_path
+from django.http import HttpResponse, Http404, FileResponse
+import os
 from .models import Student, Teacher, Project, ProjectUser, UserRelation, Module
 from .encryption import encrypt, decrypt
-from .recieve_file import recieve_stu_file, recieve_tea_file, generate_stu_doc_directory, is_empty, update_project_name, delete_project_directory
+from .recieve_file import recieve_stu_file, recieve_tea_file, generate_stu_doc_directory, generate_stu_extend_directory,is_empty, update_project_name, delete_project_directory, get_filename, get_filelist, delete_extends_directory
 # Create your views here.
 
 
@@ -199,10 +201,11 @@ def admin_module(request, module_id, module_name):
     except:
         return Http404
 
-# TODO 使用子模块(提交作业)[提交已实现,分词存储部分未实现]
+
 def use_module(request, user_id, username, module_id, module_name):
     module = get_object_or_404(Module, pk=module_id)
     student = get_object_or_404(Student, pk=user_id)
+    delete_extends_url = '/delete/extend/{}/{}/'.format(user_id, module_id)
     try:
         module_name = decrypt(module_name)
         username = decrypt(username)
@@ -211,29 +214,35 @@ def use_module(request, user_id, username, module_id, module_name):
         else:
             project = module.project
             teacher = project.teacher
+            doc_directoey = generate_stu_doc_directory(student, teacher, project.name, module.name)
+            extend_directory = generate_stu_extend_directory(student, teacher, project.name, module.name)
+            doc_upload_status = '已提交√' if not is_empty(doc_directoey) else '未提交'
+            extend_upload_status = '已提交√' if not is_empty(extend_directory) else '未提交'
+            doc_file_list = get_filelist(doc_directoey, file_type='doc', user_id=user_id, module_id=module_id)
+            extend_file_list = get_filelist(extend_directory, file_type='extend', user_id=user_id, module_id=module_id)
             if request.method == 'POST':
                 if 'send_extend_file' in request.FILES:
                     file_obj = request.FILES.get('send_extend_file')
                     try:
                         recieve_stu_file(file_obj, teacher, project.name, module.name, student, is_doc=False)
-                        return render(request, 'SimilarityApp/module_user.html',  {'module_name':module_name, 'extend_upload_result':'附件上传成功!'})
+                        return render(request, 'SimilarityApp/module_user.html',  {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':'已提交√', 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list,'extend_upload_result':'附件上传成功!请刷新页面获取最新结果'})
                     except:
-                        return render(request, 'SimilarityApp/module_user.html',  {'module_name':module_name, 'extend_upload_result':'附件上传失败!请稍后重试'})
+                        return render(request, 'SimilarityApp/module_user.html',  {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list,'extend_upload_result':'附件上传失败!请稍后重试'})
                 if 'send_doc_file' in request.FILES:
                     file_obj = request.FILES.get('send_doc_file')
                     try:
                         recieve_stu_file(file_obj, teacher, project.name, module.name, student, is_doc=True)
-                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档上传并读取成功!'})
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':'已提交√', 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list,'doc_upload_result':'文档上传并读取成功!请刷新页面获取最新结果'})
                     except TypeError:
-                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文件类型错误!不是doc|docx类型的文件'})
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list, 'doc_upload_result':'文件类型错误!不是docx类型的文件'})
                     except ConnectionRefusedError:
-                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档分词失败!请稍后重试'})
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list, 'doc_upload_result':'文档分词失败!请稍后重试'})
                     except ValueError:
-                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档读取失败!请检查文件是否完整'})
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list, 'doc_upload_result':'文档读取失败!请检查文件是否完整'})
                     except Exception:
-                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'doc_upload_result':'文档上传失败!请稍后重试'})
+                        return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list, 'doc_upload_result':'文档上传失败!请稍后重试'})
             else:
-                return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name})
+                return render(request, 'SimilarityApp/module_user.html', {'module_name':module_name, 'delete_extends_url':delete_extends_url, 'doc_upload_status':doc_upload_status, 'extend_upload_status':extend_upload_status, 'doc_file_list':doc_file_list,'extend_file_list':extend_file_list})
     except:
         return Http404
 
@@ -321,3 +330,36 @@ def delete_project(request, project_id, project_name, teacher_name):
             project.delete()
     finally:
         return redirect('SimilarityApp:主页', role='tea', user_id=teacher.id, username=encrypt(teacher.name))
+
+def download_single_file(request, file_type, user_id, module_id, filename):
+    module = get_object_or_404(Module, pk=module_id)
+    student = get_object_or_404(Student, pk=user_id)
+    try:
+        project = module.project
+        teacher = project.teacher
+        filename = decrypt(filename)
+        if file_type == 'doc':
+            directory = generate_stu_doc_directory(student, teacher, project.name, module.name)
+        elif file_type == 'extend':
+            directory = generate_stu_extend_directory(student, teacher, project.name, module.name)
+        else:
+            raise TypeError
+        file_path = os.path.join(directory, filename)
+        f = open(file_path, 'rb')
+        response = FileResponse(f)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename={}'.format(escape_uri_path(filename))
+        return response
+    except:
+        return Http404
+
+def download_zip_file(request, file_type, directory_name):
+    pass
+
+def delete_extends(request, user_id, module_id):
+    student = get_object_or_404(Student, pk=user_id)
+    module = get_object_or_404(Module, pk=module_id)
+    project = module.project
+    teacher = project.teacher
+    delete_extends_directory(teacher, student, project.name, module.name)
+    return redirect('SimilarityApp:module使用', user_id=user_id, username=encrypt(student.name), module_id=module_id, module_name=encrypt(module.name))

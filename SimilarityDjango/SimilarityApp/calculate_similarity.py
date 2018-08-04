@@ -2,7 +2,7 @@
 相似度计算模块
 使用算法:TF-IDF(启用) || LSI模型(暂不使用)
 @:param artical_directory[文章分词列表文件夹路径](dev)
-@:param redis_daatabase[文章分词列表redis](prod)
+@:param redis_daatabase[文章分词列表redis](prod)√
 by: Junyi
 '''
 import os
@@ -11,7 +11,7 @@ from .word_segmenter import WordSegmenter
 from gensim import corpora, models, similarities
 
 
-#  接收 divide_word.py 分词得到的词语列表，运用gensim建立所有文档的公共词库
+#  接收 word_segmenter.py 分词得到的词语列表，运用gensim建立所有文档的公共词库
 #  运用 SimilarityCalculator.get_docs_TFIDF_similarities()即可得到每一个文档与其他文档之间的相似度的迭代器
 
 

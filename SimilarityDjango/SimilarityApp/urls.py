@@ -18,4 +18,7 @@ urlpatterns = [
     path('module/admin/<module_id>/<module_name>/', views.admin_module, name='module管理'),
     path('module/user/<user_id>/<username>/<module_id>/<module_name>/', views.use_module, name='module使用'),
     path('delete/project/<project_id>/<project_name>/<teacher_name>/', views.delete_project, name='删除项目'),
+    path('download/single/<file_type>/<user_id>/<module_id>/<filename>/', views.download_single_file, name='下载单个文件'),
+    path('download/zip/<file_type>/<directory_name>/', views.download_zip_file, name='下载多个文件组成的压缩包'),
+    path('delete/extend/<user_id>/<module_id>/', views.delete_extends, name='删除所有附件'),
 ]

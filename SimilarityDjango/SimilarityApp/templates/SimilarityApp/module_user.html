@@ -4,21 +4,34 @@
     <meta charset="UTF-8">
     <title>提交</title>
 </head>
-<body style="margin-left: 80px;margin-top: 50px">
+<body style="margin-left: 80px;margin-top: 30px">
     <h2>模块[{{ module_name }}]提交情况:</h2>
-    <h4 style="margin-left: 30px">请选择要上传的附件:</h4>
-    <form style="margin-left: 30px" action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="send_extend_file">
-        <input type="submit">
-    </form>
-    <p style="margin-bottom: 50px;margin-left: 50px">{{ extend_upload_result }}</p>
-    <h4 style="margin-left: 30px">请选择要上传的文档文件(doc|docx):</h4>
-    <form style="margin-left: 30px" action="" method="post" enctype="multipart/form-data">
+    <h3 style="margin-top: 40px;margin-left: 30px">文档文件(.docx)提交情况: {{ doc_upload_status }}</h3>
+    <ul style="margin-left: 30px">
+        {% for file in doc_file_list %}
+            <li><a href="{{ file.download_url }}">{{ file.filename }}</a></li>
+        {% endfor %}
+    </ul>
+    <h3 style="margin-left: 30px;margin-top: 40px">附件提交情况: {{ extend_upload_status }}</h3>
+    <ul style="margin-left: 30px">
+        {% for file in extend_file_list %}
+            <li><a href="{{ file.download_url }}">{{ file.filename }}</a></li>
+        {% endfor %}
+    </ul>
+    <p style="margin-left: 40px;margin-top: 30px"><a href="{{ delete_extends_url }}">清空所有附件</a></p>
+    <h4 style="margin-top: 80px">[注意:文件名中不要带有特殊字符]请选择要上传的文档文件(.docx):</h4>
+    <form style="margin-left: 40px" action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="send_doc_file">
         <input type="submit">
     </form>
     <p style="margin-left: 50px">{{ doc_upload_result }}</p>
+    <h4 style="margin-top: 50px">[注意:文件名中不要带有特殊字符]请选择要上传的附件:</h4>
+    <form style="margin-left: 40px" action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="send_extend_file">
+        <input type="submit">
+    </form>
+    <p style="margin-left: 50px">{{ extend_upload_result }}</p>
 </body>
 </html>
