@@ -4,7 +4,7 @@ from django.http import HttpResponse, Http404, FileResponse
 import os
 from .models import Student, Teacher, Project, ProjectUser, UserRelation, Module
 from .encryption import encrypt, decrypt
-from .recieve_file import recieve_stu_file, recieve_tea_file, generate_stu_doc_directory, generate_stu_extend_directory,is_empty, update_project_name, delete_project_directory, get_filename, get_filelist, delete_extends_directory
+from .recieve_file import recieve_stu_file, recieve_tea_file, recieve_zip_file, generate_stu_doc_directory, generate_stu_extend_directory,is_empty, update_project_name, delete_project_directory, get_filename, get_filelist, delete_extends_directory, generate_zip_file
 # Create your views here.
 
 
@@ -44,6 +44,19 @@ def home(request, role, user_id, username):
             if request.method == 'POST':
                 if "create_project" in request.POST:
                     return redirect('SimilarityApp:创建项目', teacher_id=teacher.id, teacher_name=encrypt(teacher.name))
+                if "send_zip_file" in request.FILES:
+                    file_obj = request.FILES.get('send_zip_file')
+                    try:
+                        recieve_zip_file(file_obj, teacher)
+                        return render(request, 'SimilarityApp/teacher.html', {'username':username, 'project_list':project_list, 'upload_zip_result':'压缩包上传读取成功!'})
+                    except TypeError:
+                        return render(request, 'SimilarityApp/teacher.html', {'username':username, 'project_list':project_list, 'upload_zip_result':'文件格式错误!不是zip压缩包'})
+                    except ValueError:
+                        return render(request, 'SimilarityApp/teacher.html', {'username':username, 'project_list':project_list, 'upload_zip_result':'压缩包读取失败!请稍后重新上传'})
+                    except Exception:
+                        return render(request, 'SimilarityApp/teacher.html', {'username':username, 'project_list':project_list, 'upload_zip_result':'压缩包上传失败!请稍后重新上传'})
+                if "quick_calculate" in request.POST:
+                    return redirect('SimilarityApp:快速计算结果', teacher_id=teacher.id)
             else:
                 return render(request, 'SimilarityApp/teacher.html', {'username':username,'project_list':project_list})
         else:
@@ -189,6 +202,10 @@ def admin_module(request, module_id, module_name):
                 for student in student_list:
                     doc_directory = generate_stu_doc_directory(student, teacher, project.name, module.name)
                     student.is_upload = '已提交' if not is_empty(doc_directory) else '未提交'
+                    if student.is_upload == '已提交':
+                        student.download_url = '/download/zip/{}/{}/{}/'.format(module_id, student.id, encrypt(student.name))
+                    else:
+                        student.download_url = ''
                 return render(request, 'SimilarityApp/admin_module.html', {'module_name':module_name, 'student_list':student_list})
         except:
             return render(request, 'SimilarityApp/admin_module.html')
@@ -308,6 +325,10 @@ def show_similarity(request, module_id, module_name):
 def show_similarity_stu(request, module_id, module_name, username):
     return render(request, 'SimilarityApp/similarity_stu.html')
 
+def show_quick_cal_similarity(request, teacher_id):
+
+    return render(request, 'SimilarityApp/similarity_tea.html')
+
 def delete_project(request, project_id, project_name, teacher_name):
     project = get_object_or_404(Project, pk=project_id)
     try:
@@ -347,9 +368,28 @@ def download_single_file(request, file_type, user_id, module_id, filename):
     except:
         return Http404
 
-def download_zip_file(request, file_type, directory_name):
-    pass
+# 将单个学生提交的文件全部打包下载到本地
+def download_zip_file(request, module_id, user_id, username):
+    module = get_object_or_404(Module, pk=module_id)
+    student = get_object_or_404(Student, pk=user_id)
+    try:
+        project = module.project
+        teacher = project.teacher
+        username = decrypt(username)
+        if username == student.name:
+            filename = '{}-{}.zip'.format(student.name, student.account)
+            zip_file_path = generate_zip_file(student, teacher, project.name, module.name)
+            f = open(zip_file_path, 'rb')
+            response = FileResponse(f)
+            response['Content-Type'] = 'application/octet-stream'
+            response['Content-Disposition'] = 'attachment;filename={}'.format(escape_uri_path(filename))
+            return response
+        else:
+            return Http404
+    except:
+        return Http404
 
+# 学生清空一个子模块的所有附件
 def delete_extends(request, user_id, module_id):
     student = get_object_or_404(Student, pk=user_id)
     module = get_object_or_404(Module, pk=module_id)

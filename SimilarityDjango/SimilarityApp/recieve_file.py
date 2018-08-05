@@ -18,7 +18,8 @@
 import pandas as pd
 import os
 import shutil
-import redis
+import zipfile
+from pathlib import Path
 from .models import UserRelation, Student, ProjectUser
 from .encryption import encrypt
 from .artical_handler import ArticalHandler
@@ -70,6 +71,25 @@ def recieve_tea_file(file_object, teacher, project):
     except:
         raise ValueError
 
+# 老师文件夹的temp_zip目录用来保存临时接收的zip文件(解压到quick_cal文件夹,然后开始计算)
+def recieve_zip_file(file_object, teacher):
+    file_type = os.path.splitext(file_object.name)[-1]
+    if file_type != '.zip':
+        raise TypeError
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    zip_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),'temp_zip')
+    target_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),'quick_cal')
+    shutil.rmtree(zip_directory, ignore_errors=True)
+    os.makedirs(zip_directory)
+    zip_path = os.path.join(zip_directory, file_object.name)
+    with open(zip_path, 'wb') as f:
+        for chunk in file_object.chunks():
+            f.write(chunk)
+    try:
+        decompress(zip_path=zip_path, target_directory=target_directory)
+    except:
+        raise ValueError
+
 # 读取上传的Excel文件,将文件中的信息同步到数据库中(student表,user_relation表,project_user表)[经过测试,可以正常运行]
 def update_student_info(file_path, teacher, project):
     student_info = pd.read_excel(file_path)      # student_info type->DataFrame
@@ -104,6 +124,12 @@ def update_student_info(file_path, teacher, project):
 #     content = subprocess.check_output([antiword_path, doc_file_path])
 #     # antiword返回的content的格式有待确认
 
+def generate_stu_directory(student, teacher, project, module):
+    student_info = '{}-{}'.format(student.name, student.account)
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info)
+    return file_directory
+
 # 生成一个文件夹路径，方便接下来判断目录是否为空，从而判断用户是否提交了文件
 def generate_stu_doc_directory(student, teacher, project, module):
     student_info = '{}-{}'.format(student.name, student.account)
@@ -117,6 +143,24 @@ def generate_stu_extend_directory(student, teacher, project, module):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info),'extends')
     return file_directory
+
+# 在所给文件夹的上一级目录下新建一个【文件夹名_zip】目录，将该文件夹压缩后放到此目录中(放回target_path)
+def generate_zip_file(student, teacher, project, module):
+    directory = generate_stu_directory(student, teacher, project, module)
+    path_splited = os.path.split(directory)
+    zip_name = path_splited[-1] + '.zip'
+    target_directory = os.path.join(path_splited[0], path_splited[-1]+'_zip')
+    target_zip_path = os.path.join(target_directory, zip_name)
+    shutil.rmtree(target_directory, ignore_errors=True)
+    os.makedirs(target_directory, exist_ok=True)
+    z = zipfile.ZipFile(target_zip_path, 'w', zipfile.ZIP_DEFLATED)
+    for dirpath, dirnames, filenames in os.walk(directory):
+        fpath = dirpath.replace(directory,'')
+        fpath = fpath and fpath + os.sep or ''
+        for filename in filenames:
+            z.write(os.path.join(dirpath, filename), fpath+filename)
+    z.close()
+    return target_zip_path
 
 # 判断目录是否为空
 def is_empty(directory_path):
@@ -143,7 +187,6 @@ def delete_extends_directory(teacher, student, project_name, module_name):
     file_directory = generate_stu_extend_directory(student,teacher, project_name, module_name)
     shutil.rmtree(file_directory, ignore_errors=True)
 
-
 def get_filename(file_path):
     if os.path.exists(file_path):
         filename = os.path.split(file_path)[-1]
@@ -151,6 +194,7 @@ def get_filename(file_path):
     else:
         return None
 
+# 学生上传文件界面,获取文件path的函数
 def get_filelist(directory_path, file_type, user_id, module_id):
     try:
         file_list = []
@@ -166,4 +210,16 @@ def get_filelist(directory_path, file_type, user_id, module_id):
         return file_list
     except:
         return []
+
+# 解压缩
+def decompress(zip_path, target_directory):
+    f = zipfile.ZipFile(zip_path)
+    shutil.rmtree(target_directory, ignore_errors=True)
+    os.makedirs(target_directory, exist_ok=True)
+    for name in f.namelist():
+        f.extract(name, target_directory)
+        old_path = os.path.join(target_directory, name)
+        new_name = os.path.join(target_directory, name.encode('cp437').decode('gbk'))  # 解决中文乱码问题
+        os.rename(old_path, new_name)
+
 ##########################################################################################
