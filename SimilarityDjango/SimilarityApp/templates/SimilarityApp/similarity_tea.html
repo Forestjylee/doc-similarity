@@ -6,7 +6,7 @@
 </head>
 <body>
     <h2>[{{ module_name }}]文档相似度计算结果:</h2>
-    <table border="3" width="100%">
+    <table style="margin-left: 150px" border="3" width="80%">
         <thead>
             <tr>
 				<th>文档A</th>
@@ -17,9 +17,9 @@
         <tbody>
             {% for similarity in similarity_list %}
             <tr>
-                <td align="center">{{ similarity.doc_A }}</td>
-                <td align="center">{{ similarity.doc_B }}</td>
-                <td align="center">{{ similarity.similarity }}</td>
+                <td align="center"><a href="{{ similarity.doc_A_download }}">{{ similarity.doc_A }}</a></td>
+                <td align="center"><a href="{{ similarity.doc_B_download }}">{{ similarity.doc_B }}</a></td>
+                <td align="center">{{ similarity.similarity }}%</td>
             </tr>
             {% endfor %}
         </tbody>

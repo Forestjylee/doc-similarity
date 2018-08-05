@@ -22,4 +22,5 @@ urlpatterns = [
     path('delete/extend/<user_id>/<module_id>/', views.delete_extends, name='删除所有附件'),
     path('download/single/<file_type>/<user_id>/<module_id>/<filename>/', views.download_single_file, name='下载单个文件'),
     path('download/zip/<module_id>/<user_id>/<username>/', views.download_zip_file, name='下载多个文件组成的压缩包'),
+    path('download/quick_cal/<teacher_id>/<filename>/', views.download_quick_cal_doc, name='快速计算下载'),
 ]

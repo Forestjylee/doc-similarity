@@ -39,7 +39,7 @@ class WordSegmenter(object):
                 artical_separated.extend(text_separated)
         return artical_separated
 
-    # 将分词后的列表保存至redis数据库
+    # 将分词后的列表保存至redis数据库)
     def save_to_redis(self, artical_name, artical_separated):
         try:
             self.redis_handler.set(name=artical_name, value=str(artical_separated))

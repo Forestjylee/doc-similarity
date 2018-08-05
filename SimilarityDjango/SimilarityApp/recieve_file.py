@@ -13,17 +13,17 @@
 # @:param  is_doc  (Boolean type)判断是否是doc类型的文件
 # """
 
-# 不适用antiword进行读取,限制用户只能上传docx类型文件
+# 不使用antiword进行读取,限制用户只能上传docx类型文件
 
 import pandas as pd
 import os
 import shutil
 import zipfile
-from pathlib import Path
 from .models import UserRelation, Student, ProjectUser
 from .encryption import encrypt
 from .artical_handler import ArticalHandler
 from .word_segmenter import WordSegmenter
+from .calculate_similarity import SimilarityCalculator
 
 # 收到一个doc就分词并存储进redis数据库中|收到附件就保存起来
 def recieve_stu_file(file_object, teacher, project, module, student, is_doc=False):
@@ -144,7 +144,7 @@ def generate_stu_extend_directory(student, teacher, project, module):
     file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info),'extends')
     return file_directory
 
-# 在所给文件夹的上一级目录下新建一个【文件夹名_zip】目录，将该文件夹压缩后放到此目录中(放回target_path)
+# 在所给文件夹的上一级目录下新建一个【文件夹名_zip】目录，将该文件夹压缩后放到此目录中(返回target_path)
 def generate_zip_file(student, teacher, project, module):
     directory = generate_stu_directory(student, teacher, project, module)
     path_splited = os.path.split(directory)
@@ -161,6 +161,13 @@ def generate_zip_file(student, teacher, project, module):
             z.write(os.path.join(dirpath, filename), fpath+filename)
     z.close()
     return target_zip_path
+
+# 生成快速计算某文档的文件路径
+def genetate_quick_cal_path(teacher, filename):
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),'quick_cal')
+    file_path = os.path.join(file_directory, filename)
+    return file_path
 
 # 判断目录是否为空
 def is_empty(directory_path):
@@ -210,6 +217,17 @@ def get_filelist(directory_path, file_type, user_id, module_id):
         return file_list
     except:
         return []
+
+# 获取快速计算结果列表(已通过测试)
+def get_quick_similarity_list(teacher):
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    artical_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'), teacher_info), 'quick_cal')
+    similarity_calculator = SimilarityCalculator(artical_directory=artical_directory, is_quick=True)
+    similarity_list = similarity_calculator.get_top_200()
+    for similarity in similarity_list:
+        similarity['doc_A_download'] = '/download/quick_cal/{}/{}/'.format(teacher.id, similarity['doc_A'])
+        similarity['doc_B_download'] = '/download/quick_cal/{}/{}/'.format(teacher.id, similarity['doc_B'])
+    return similarity_list
 
 # 解压缩
 def decompress(zip_path, target_directory):

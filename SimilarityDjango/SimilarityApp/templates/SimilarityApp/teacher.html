@@ -89,7 +89,7 @@
         <button style="margin-left: 120px" class="createproject hover fontstyle zj"  type="submit" name="create_project">新建项目</button>
     </form>
 
-    <h3 style="margin-top: 40px;margin-left: 20px">快速计算:</h3>
+    <h3 style="margin-top: 40px;margin-left: 20px">快速计算:(直接点击计算会得到上一次快速计算的结果)</h3>
     <h5 style="margin-top: 0px;margin-left: 20px">(说明:上传一个含有文档的zip压缩包,立即计算所有文档之间的相似度)</h5>
     <h4 style="margin-top: 10px;margin-left: 30px">[注意:文件名中不要带有特殊字符]请选择要上传的zip压缩包:</h4>
     <form style="margin-left: 600px" action="" method="post" enctype="multipart/form-data">
@@ -102,6 +102,6 @@
         {% csrf_token %}
         <button style="margin-left: 450px;margin-top: 10px" class="do_calculate hover fontstyle zj"  type="submit" name="quick_calculate">计算相似度</button>
     </form>
-    <p style="margin-left: 675px"><a href="{{ last_quick_calculate_result_url }}">查看上次快速计算结果</a></p>
+    <!--<p style="margin-left: 675px"><a href="{{ last_quick_calculate_result_url }}">查看上次快速计算结果</a></p>-->
 </body>
 </html>

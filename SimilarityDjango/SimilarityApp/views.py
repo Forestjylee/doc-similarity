@@ -4,7 +4,8 @@ from django.http import HttpResponse, Http404, FileResponse
 import os
 from .models import Student, Teacher, Project, ProjectUser, UserRelation, Module
 from .encryption import encrypt, decrypt
-from .recieve_file import recieve_stu_file, recieve_tea_file, recieve_zip_file, generate_stu_doc_directory, generate_stu_extend_directory,is_empty, update_project_name, delete_project_directory, get_filename, get_filelist, delete_extends_directory, generate_zip_file
+from .recieve_file import *
+# from .recieve_file import recieve_stu_file, recieve_tea_file, recieve_zip_file, get_quick_similarity_list, generate_stu_doc_directory, generate_stu_extend_directory,is_empty, update_project_name, delete_project_directory, get_filename, get_filelist, delete_extends_directory, generate_zip_file
 # Create your views here.
 
 
@@ -325,9 +326,14 @@ def show_similarity(request, module_id, module_name):
 def show_similarity_stu(request, module_id, module_name, username):
     return render(request, 'SimilarityApp/similarity_stu.html')
 
+# 显示计算相似度的结果(快速计算)
 def show_quick_cal_similarity(request, teacher_id):
-
-    return render(request, 'SimilarityApp/similarity_tea.html')
+    teacher = get_object_or_404(Teacher, pk=teacher_id)
+    try:
+        similarity_list = get_quick_similarity_list(teacher)
+        return render(request, 'SimilarityApp/similarity_tea.html', {'module_name':'*快速计算*', 'similarity_list':similarity_list})
+    except:
+        return HttpResponse('计算出现错误,请检查压缩包内容后重新上传计算.')
 
 def delete_project(request, project_id, project_name, teacher_name):
     project = get_object_or_404(Project, pk=project_id)
@@ -388,6 +394,20 @@ def download_zip_file(request, module_id, user_id, username):
             return Http404
     except:
         return Http404
+
+# 将快速下载界面的某个指定文档下载到本地
+def download_quick_cal_doc(request, teacher_id, filename):
+    teacher = get_object_or_404(Teacher, pk=teacher_id)
+    file_path = genetate_quick_cal_path(teacher, filename)
+    try:
+        f = open(file_path, 'rb')
+        response = FileResponse(f)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename={}'.format(escape_uri_path(filename))
+        return response
+    except:
+        Http404
+
 
 # 学生清空一个子模块的所有附件
 def delete_extends(request, user_id, module_id):
