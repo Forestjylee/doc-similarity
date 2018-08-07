@@ -48,8 +48,8 @@ class WordSegmenter(object):
             return False
 
     # 从Redis数据库中取出文章对应的分词列表
-    def read_from_redis_for_calculate(self, artical_name):
-        artical_separated = self.redis_handler.get(name=artical_name)
+    def read_from_redis_for_calculate(self, redis_key):
+        artical_separated = self.redis_handler.get(name=redis_key)
         return eval(artical_separated)
 
     # 判断一个元素是否存在redis表中

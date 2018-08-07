@@ -15,10 +15,10 @@
 
 # 不使用antiword进行读取,限制用户只能上传docx类型文件
 
-import pandas as pd
 import os
 import shutil
 import zipfile
+import pandas as pd
 from .models import UserRelation, Student, ProjectUser
 from .encryption import encrypt
 from .artical_handler import ArticalHandler
@@ -31,7 +31,7 @@ def recieve_stu_file(file_object, teacher, project, module, student, is_doc=Fals
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info)
-    if is_doc is True:     # 如果文件是doc|docx文件
+    if is_doc is True:          # 如果文件是docx文件(本版本只支持'.docx'文件)
         if file_type != '.docx':
             raise TypeError
         file_directory = os.path.join(file_directory, 'docs')
@@ -118,11 +118,6 @@ def update_student_info(file_path, teacher, project):
             project_user.project = project
             project_user.student = student
             project_user.save()
-
-# 本版本不使用antiword
-# def get_content_from_antiword(antiword_path, doc_file_path):
-#     content = subprocess.check_output([antiword_path, doc_file_path])
-#     # antiword返回的content的格式有待确认
 
 def generate_stu_directory(student, teacher, project, module):
     student_info = '{}-{}'.format(student.name, student.account)
@@ -217,6 +212,17 @@ def get_filelist(directory_path, file_type, user_id, module_id):
         return file_list
     except:
         return []
+
+# 获取提交式项目结果列表(已通过测试)
+def get_similarity_list(teacher, project_name, module):
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module.name)
+    similarity_calculator = SimilarityCalculator(artical_directory, is_quick=False, project_name=project_name, module_name=module.name)
+    similarity_list = similarity_calculator.get_top_200()
+    for similarity in similarity_list:
+        similarity['doc_A_download'] = '/download/doc/{}/{}/'.format(similarity['doc_A_directory'], module.id)
+        similarity['doc_B_download'] = '/download/doc/{}/{}/'.format(similarity['doc_B_directory'], module.id)
+    return similarity_list
 
 # 获取快速计算结果列表(已通过测试)
 def get_quick_similarity_list(teacher):

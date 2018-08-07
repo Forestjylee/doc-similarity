@@ -17,16 +17,33 @@ from gensim import corpora, models, similarities
 
 class SimilarityCalculator(object):
 
-    def __init__(self, artical_directory, is_quick=False):
+    def __init__(self, artical_directory, project_name=None, module_name=None, is_quick=False):
         self.artical_directory = artical_directory
         self.docs_words = []
-        self.artical_name_list = self.get_artical_name_list()
+        self.is_quick = is_quick
         self.word_segmenter = WordSegmenter()
         self.artical_handler = ArticalHandler(artical_directory)
         if not is_quick:     # 非快速计算时
+            self.project_name = project_name
+            self.module_name = module_name
+            self.redis_key_list = self.get_redis_key_list()
             self.set_docs_words()
         else:
+            self.artical_name_list = self.get_artical_name_list()
             self.set_docs_words_quick()
+
+    def get_redis_key_list(self):
+        try:
+            redis_key_list = []
+            student_list = os.listdir(self.artical_directory)
+            for student_info in student_list:
+                doc_directory = os.path.join(os.path.join(self.artical_directory, student_info),'docs')
+                if not self.is_empty(doc_directory):
+                    redis_key = '{}-{}-{}'.format(student_info, self.project_name, self.module_name)
+                    redis_key_list.append(redis_key)
+            return redis_key_list
+        except:
+            raise FileNotFoundError
 
     # 从文件夹路径中获取文件名
     def get_artical_name_list(self):
@@ -36,15 +53,16 @@ class SimilarityCalculator(object):
         except:
             raise FileNotFoundError
 
-    # 读取所有文档的分词词组列表(从本地硬盘读出(开发时),从redis数据库读出(部署时))[提交式项目]
+    # 读取所有文档的分词词组列表(从redis数据库读出)[提交式项目]
     def set_docs_words(self):
         self.docs_words = []
-        for artical_name in self.artical_name_list:
-            artical_separated = self.word_segmenter.read_from_redis_for_calculate(artical_name=artical_name)           # prod
+        for redis_key in self.redis_key_list:
+            artical_separated = self.word_segmenter.read_from_redis_for_calculate(redis_key=redis_key)           # prod
             self.docs_words.append(artical_separated)
 
-    # 从本地硬盘读取文章然后分词, 用于快速计算模块
+    # 从本地硬盘读取文章然后分词, 用于快速计算模块[快速计算]
     def set_docs_words_quick(self):
+        self.docs_words = []
         for artical in self.artical_handler.get_artical_generators():
             artical_separated = self.word_segmenter.separate_artical_for_calculate(artical)
             self.docs_words.append(artical_separated)
@@ -93,17 +111,32 @@ class SimilarityCalculator(object):
             pretty_doc_similarities.append(data)
         return pretty_doc_similarities
 
-    # 获取相似度前200的文档信息
+    # 获取相似度前200的文档信息(快速计算/提交式项目)[通过self.is_quick来区分两者]
     def get_top_200(self):
         similarity_list = []
-        list_len = len(self.artical_name_list)
+        if not self.is_quick:
+            name_list = self.redis_key_list
+        else:
+            name_list = self.artical_name_list
+        list_len = len(name_list)
         for index, doc in enumerate(self.get_docs_TFIDF_similarities()):
             for i in range(index+1, list_len):
-                item = {
-                    'doc_A':self.artical_name_list[index],
-                    'doc_B':self.artical_name_list[doc[i][0]],
-                    'similarity':round(doc[i][1]*100, 3)    # 保留三位小数
-                }
+                if not self.is_quick:
+                    doc_A_info = name_list[index]
+                    doc_B_info = name_list[doc[i][0]]
+                    item = {
+                        'doc_A':doc_A_info,
+                        'doc_A_directory':('-').join(doc_A_info.split('-')[:2]),
+                        'doc_B':name_list[doc[i][0]],
+                        'doc_B_directory':('-').join(doc_B_info.split('-')[:2]),
+                        'similarity':round(doc[i][1]*100, 3),    # 保留三位小数
+                    }
+                else:   # TODO 学生信息
+                    item = {
+                        'doc_A':name_list[index],
+                        'doc_B':name_list[doc[i][0]],
+                        'similarity':round(doc[i][1]*100, 3)    # 保留三位小数
+                    }
                 similarity_list.append(item)
         # 只取前200
         try:
@@ -112,3 +145,13 @@ class SimilarityCalculator(object):
             top_200 = sorted(similarity_list, key=lambda x:x['similarity'], reverse=True)
         return top_200
 
+    # 判断目录是否为空
+    @staticmethod
+    def is_empty(directory_path):
+        try:
+            if not os.listdir(directory_path):
+                return True
+            else:
+                return False
+        except:
+            return True

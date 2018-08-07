@@ -4,8 +4,8 @@ from django.http import HttpResponse, Http404, FileResponse
 import os
 from .models import Student, Teacher, Project, ProjectUser, UserRelation, Module
 from .encryption import encrypt, decrypt
-from .recieve_file import *
-# from .recieve_file import recieve_stu_file, recieve_tea_file, recieve_zip_file, get_quick_similarity_list, generate_stu_doc_directory, generate_stu_extend_directory,is_empty, update_project_name, delete_project_directory, get_filename, get_filelist, delete_extends_directory, generate_zip_file
+from .recieve_file import *     # recieve_file是视图函数的辅助py文件
+
 # Create your views here.
 
 
@@ -317,10 +317,14 @@ def create_module(request, project_id, project_name):
     except:
         Http404("页面不存在!")
 
-# TODO 显示计算相似度的结果(老师视角)
+# 显示计算相似度的结果(老师视角)
 def show_similarity(request, module_id, module_name):
+    module = get_object_or_404(Module, pk=module_id)
+    project = module.project
+    teacher = project.teacher
     module_name = decrypt(module_name)
-    return render(request, 'SimilarityApp/similarity_tea.html')
+    similarity_list = get_similarity_list(teacher, project_name=project.name, module=module)
+    return render(request, 'SimilarityApp/similarity_tea.html', {'module_name':module_name, 'similarity_list':similarity_list})
 
 # TODO 显示计算相似度的结果(学生视角)
 def show_similarity_stu(request, module_id, module_name, username):
@@ -395,6 +399,25 @@ def download_zip_file(request, module_id, user_id, username):
     except:
         return Http404
 
+# [老师查看查重界面]下载指定文档
+def download_doc(request, student_info, module_id):
+    module = get_object_or_404(Module, pk=module_id)
+    project = module.project
+    teacher = project.teacher
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project.name),module.name),student_info),'docs')
+    try:
+        filename = os.listdir(file_directory)[0]
+        file_path = os.path.join(file_directory, filename)
+        f = open(file_path, 'rb')
+        response = FileResponse(f)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename={}'.format(escape_uri_path(filename))
+        return response
+    except:
+        return Http404
+
+
 # 将快速下载界面的某个指定文档下载到本地
 def download_quick_cal_doc(request, teacher_id, filename):
     teacher = get_object_or_404(Teacher, pk=teacher_id)
@@ -406,7 +429,7 @@ def download_quick_cal_doc(request, teacher_id, filename):
         response['Content-Disposition'] = 'attachment;filename={}'.format(escape_uri_path(filename))
         return response
     except:
-        Http404
+        return Http404
 
 
 # 学生清空一个子模块的所有附件
