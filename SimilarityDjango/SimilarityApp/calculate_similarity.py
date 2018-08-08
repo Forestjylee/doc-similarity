@@ -99,17 +99,36 @@ class SimilarityCalculator(object):
     def get_docs_LSI_similarities(self):
         pass
 
-    # 美化输出格式
-    @staticmethod
-    def prettify(doc_similarities):
-        pretty_doc_similarities = []
-        for each_similarity in doc_similarities:
-            data = {
-                'index':each_similarity[0],
-                'similarity':'%.2f'%(each_similarity[1]*100)
+    # 得到指定学生doc对应其他学生doc的相似度(前十相似)
+    def get_stu_top_10(self, student_info):
+        similarity_list = []
+        dictionary = corpora.Dictionary(self.docs_words)
+        try:
+            stu_doc_index = self.redis_key_list.index('{}-{}-{}'.format(student_info, self.project_name, self.module_name))
+        except:
+            raise ModuleNotFoundError
+        stu_doc_vectors = dictionary.doc2bow(self.docs_words[stu_doc_index])
+        TFIDF_model = self.get_docs_TFIDF_model()
+        TFIDF_similarity_calculator = similarities.MatrixSimilarity(corpus=list(TFIDF_model[self.get_docs_corpus()]))
+        doc_similarities = list(enumerate(TFIDF_similarity_calculator[TFIDF_model[stu_doc_vectors]]))
+        for doc_similarity in doc_similarities:
+            doc_index = doc_similarity[0]
+            similarity = doc_similarity[1]
+            if doc_index != stu_doc_index:
+                doc_B_info = self.redis_key_list[doc_index]
+            else:
+                continue
+            item = {
+                'doc_B': doc_B_info,
+                'similarity': round(similarity * 100, 3),  # 保留三位小数
             }
-            pretty_doc_similarities.append(data)
-        return pretty_doc_similarities
+            similarity_list.append(item)
+        try:
+            top_10 = sorted(similarity_list, key=lambda x: x['similarity'], reverse=True)[:10]
+        except:
+            top_10 = sorted(similarity_list, key=lambda x: x['similarity'], reverse=True)
+        return top_10
+
 
     # 获取相似度前200的文档信息(快速计算/提交式项目)[通过self.is_quick来区分两者]
     def get_top_200(self):

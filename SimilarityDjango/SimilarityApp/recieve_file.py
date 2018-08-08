@@ -180,6 +180,11 @@ def update_project_name(teacher, project_old_name, project_new_name):
     new_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project_new_name)
     os.rename(old_directory, new_directory)
 
+def delete_module_directory(teacher, project_name, module_name):
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project_name),module_name)
+    shutil.rmtree(directory, ignore_errors=True)
+
 def delete_project_directory(teacher, project_name):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name)
@@ -213,8 +218,16 @@ def get_filelist(directory_path, file_type, user_id, module_id):
     except:
         return []
 
+def get_similarity_list_stu(student, teacher, project_name, module_name):
+    student_info = '{}-{}'.format(student.name, student.account)
+    teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+    artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module_name)
+    similarity_calculator = SimilarityCalculator(artical_directory, is_quick=False, project_name=project_name, module_name=module_name)
+    similarity_list = similarity_calculator.get_stu_top_10(student_info=student_info)
+    return similarity_list
+
 # 获取提交式项目结果列表(已通过测试)
-def get_similarity_list(teacher, project_name, module):
+def get_similarity_list_tea(teacher, project_name, module):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
     artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module.name)
     similarity_calculator = SimilarityCalculator(artical_directory, is_quick=False, project_name=project_name, module_name=module.name)

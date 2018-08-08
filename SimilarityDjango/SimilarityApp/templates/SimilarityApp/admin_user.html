@@ -29,7 +29,7 @@
                 <td align="center">{{ student.name }}</td>
                 <td align="center">{{ student.unit }}</td>
                 <td align="center">已加入</td>
-                <td align="center"><a href="{{ delete_url }}">移出</a></td>
+                <td align="center"><a href="{{ student.delete_url }}">移出</a></td>
             </tr>
             {% endfor %}
         </tbody>

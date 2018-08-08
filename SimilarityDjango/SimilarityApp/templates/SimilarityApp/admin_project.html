@@ -13,6 +13,7 @@
 				<th>截止日期</th>
 				<th>创建时间</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +23,7 @@
                 <td align="center"><a href={{ module.url }}>{{ module.name }}</a></td>
                 <td align="center">{{ module.end_date }}</td>
                 <td align="center">{{ module.createtime }}</td>
+                <td align="center"><a href={{ module.delete_url }}>删除</a></td>
                 <td align="center"><a href={{ module.similarity_url }}>计算相似度</a></td>
             </tr>
             {% endfor %}

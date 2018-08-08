@@ -9,15 +9,13 @@
     <table border="3" width="100%">
         <thead>
             <tr>
-				<th>文档A</th>
-				<th>文档B</th>
+				<th>文档</th>
 				<th>相似度</th>
             </tr>
         </thead>
         <tbody>
             {% for similarity in similarity_list %}
             <tr>
-                <td align="center">{{ similarity.doc_A }}</td>
                 <td align="center">{{ similarity.doc_B }}</td>
                 <td align="center">{{ similarity.similarity }}</td>
             </tr>

@@ -87,7 +87,7 @@ def login(request):
     else:
         return render(request, 'SimilarityApp/login.html')
 
-# 项目管理界面
+# 项目管理界面(测试通过)
 def project_admin(request, project_id, project_name):
     project = get_object_or_404(Project, pk=project_id)
     try:
@@ -101,6 +101,7 @@ def project_admin(request, project_id, project_name):
                 return render(request, 'SimilarityApp/admin_project.html', {'project_name': project_name})
             for module in module_list:
                 module.url = '/module/admin/{}/{}/'.format(module.id, encrypt(module.name))
+                module.delete_url = '/delete/module/{}/{}/'.format(module.id, encrypt(module.name))
                 module.similarity_url = '/similarity/tea/{}/{}/'.format(module.id, encrypt(module.name))
             if request.method == 'POST':
                 if 'admin_user' in request.POST:
@@ -116,6 +117,7 @@ def project_admin(request, project_id, project_name):
     except:
         return Http404
 
+# 学生查看项目界面
 def project_user(request, user_id, username, project_name):
     try:
         project_name = decrypt(project_name)
@@ -131,7 +133,7 @@ def project_user(request, user_id, username, project_name):
     except:
         return Http404
 
-# 编辑参与项目的学生(通过excel文件添加)
+# TODO (移出部分还未实现)编辑参与项目的学生(通过excel文件添加)
 def admin_user(request, project_id, project_name):
     project = get_object_or_404(Project, pk=project_id)
     try:
@@ -141,6 +143,8 @@ def admin_user(request, project_id, project_name):
         else:
             project_user_list = ProjectUser.objects.filter(project=project)
             student_in_project = [project_user.student for project_user in project_user_list]
+            for student in student_in_project:
+                student.delete_url = '/delete/project_user/{}/{}/{}/'.format(project_id, student.id, encrypt(student.name))
             if request.method == 'POST':
                 file_obj = request.FILES.get('send_file')      # 上传文件的文件名
                 try:
@@ -185,7 +189,7 @@ def edit_project(request, project_id, project_name):
     except:
         return Http404
 
-# TODO 管理子模块
+# 管理子模块
 def admin_module(request, module_id, module_name):
     module = get_object_or_404(Module, pk=module_id)
     try:
@@ -318,17 +322,28 @@ def create_module(request, project_id, project_name):
         Http404("页面不存在!")
 
 # 显示计算相似度的结果(老师视角)
-def show_similarity(request, module_id, module_name):
+def show_similarity_tea(request, module_id, module_name):
     module = get_object_or_404(Module, pk=module_id)
     project = module.project
     teacher = project.teacher
     module_name = decrypt(module_name)
-    similarity_list = get_similarity_list(teacher, project_name=project.name, module=module)
+    similarity_list = get_similarity_list_tea(teacher, project_name=project.name, module=module)
     return render(request, 'SimilarityApp/similarity_tea.html', {'module_name':module_name, 'similarity_list':similarity_list})
 
-# TODO 显示计算相似度的结果(学生视角)
+# 显示计算相似度的结果(学生视角)
 def show_similarity_stu(request, module_id, module_name, username):
-    return render(request, 'SimilarityApp/similarity_stu.html')
+    module = get_object_or_404(Module, pk=module_id)
+    student = get_object_or_404(Student, name=decrypt(username))
+    module_name = decrypt(module_name)
+    if module.name != module_name:
+        return Http404
+    project = module.project
+    teacher = project.teacher
+    try:
+        similarity_list = get_similarity_list_stu(student, teacher, project.name, module.name)
+        return render(request, 'SimilarityApp/similarity_stu.html', {'module_name':module_name,'similarity_list':similarity_list})
+    except ModuleNotFoundError:
+        return Http404
 
 # 显示计算相似度的结果(快速计算)
 def show_quick_cal_similarity(request, teacher_id):
@@ -355,6 +370,31 @@ def delete_project(request, project_id, project_name, teacher_name):
             project.delete()
     finally:
         return redirect('SimilarityApp:主页', role='tea', user_id=teacher.id, username=encrypt(teacher.name))
+
+# 删除学生参与项目的关系,相当于将学生移出这个项目(未删除学生→老师的对应关系以及学生的信息)
+def delete_project_user(request, project_id, user_id, username):
+    project = get_object_or_404(Project, pk=project_id)
+    student = get_object_or_404(Student, pk=user_id)
+    username = decrypt(username)
+    if username != student.name:
+        return Http404
+    else:
+        project_user = get_object_or_404(ProjectUser, project=project, student=student)
+        project_user.delete()
+        return redirect('SimilarityApp:编辑参与学生', project_id=project_id, project_name = encrypt(project.name))
+
+# TODO 删除一个子模块(数据库删除加文件系统删除)[注意:redis上面的子模块的分词数据没有删除(以后实现)]
+def delete_module(request, module_id, module_name):
+    module = get_object_or_404(Module, pk=module_id)
+    project = module.project
+    if module.name != decrypt(module_name):
+        return Http404
+    else:
+        try:
+            module.delete()
+            delete_module_directory(teacher, project.name, module.name)
+        finally:
+            return redirect('SimilarityApp:老师项目管理', project_id=project.id, project_name=encrypt(project.name))
 
 def download_single_file(request, file_type, user_id, module_id, filename):
     module = get_object_or_404(Module, pk=module_id)
