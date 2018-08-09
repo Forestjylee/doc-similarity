@@ -76,6 +76,14 @@ WSGI_APPLICATION = 'SimilarityDjango.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+# '''(部署时,测试部署使用版本MySql5.7)
+# 在创建数据的时候设置好character ，这样再创建 table的时候会和database的编码方式相同。
+#
+# CREATE DATABASE <DATABASE_NAME> CHARACTER SET <CODE>;
+#
+# 当然如果database创建的时候忘了设置，在创建表的时候任然可以设置character来补救。
+#
+# CREATE TABLE <TABLE_NAME> (.......) CHARACTER SET <CODE>;'''
 
 DATABASES = {
     'default': {
