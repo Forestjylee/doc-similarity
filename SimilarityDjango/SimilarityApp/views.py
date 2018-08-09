@@ -281,6 +281,9 @@ def create_project(request, teacher_id, teacher_name):
                         if project_end_date:
                             project.end_date = project_end_date
                         project.save()
+                        teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+                        directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name)
+                        os.makedirs(directory, exist_ok=True)
                         return render(request, 'SimilarityApp/create_project.html', {'create_status':'创建成功!'})
                     except:
                         return render(request, 'SimilarityApp/create_project.html', {'create_status':'创建失败!请重试'})
@@ -312,6 +315,10 @@ def create_module(request, project_id, project_name):
                         if module_description:
                             module.description = module_description
                         module.save()
+                        teacher = project.teacher
+                        teacher_info = '{}-{}'.format(teacher.name, teacher.account)
+                        directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module_name)
+                        os.makedirs(directory, exist_ok=True)
                         return render(request, 'SimilarityApp/create_module.html', {'create_status': '创建成功!'})
                     except:
                         return render(request, 'SimilarityApp/create_module.html', {'create_status': '创建失败!请重试'})

@@ -12,6 +12,7 @@ django-redis = "*"
 pymysql = "*"
 gensim = "*"
 pandas = "*"
+xlrd = "*"
 
 [dev-packages]
 
