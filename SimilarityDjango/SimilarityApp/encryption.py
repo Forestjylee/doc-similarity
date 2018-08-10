@@ -18,7 +18,3 @@ def decrypt(encrypted_string):
     source_string = base64.b64decode(bytes(encrypted_string, encoding='utf-8'))
     return str(source_string, encoding='utf-8')
 
-if __name__ == '__main__':
-    source_string = "5a6e6aqMMeKAlOi+k+ayueeuoemBk+mXrumimC5kb2N4"
-    back = decrypt(source_string)
-    print(back)

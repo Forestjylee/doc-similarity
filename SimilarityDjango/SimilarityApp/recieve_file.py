@@ -30,7 +30,7 @@ def recieve_stu_file(file_object, teacher, project, module, student, is_doc=Fals
     file_type = os.path.splitext(file_object.name)[-1]
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info)
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project),module),student_info)
     if is_doc is True:          # 如果文件是docx文件(本版本只支持'.docx'文件)
         if file_type != '.docx':
             raise TypeError
@@ -60,7 +60,7 @@ def recieve_tea_file(file_object, teacher, project):
     if file_type != '.xlsx' and file_type != '.xls':
         raise TypeError
     teacher_info = '{}-{}'.format(teacher.name,teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'), teacher_info), 'students_info')
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'), teacher_info), 'students_info')
     os.makedirs(file_directory, exist_ok=True)
     file_path = os.path.join(file_directory, file_object.name)
     with open(file_path, 'wb') as f:
@@ -77,8 +77,8 @@ def recieve_zip_file(file_object, teacher):
     if file_type != '.zip':
         raise TypeError
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    zip_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),'temp_zip')
-    target_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),'quick_cal')
+    zip_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),'temp_zip')
+    target_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),'quick_cal')
     shutil.rmtree(zip_directory, ignore_errors=True)
     os.makedirs(zip_directory)
     zip_path = os.path.join(zip_directory, file_object.name)
@@ -122,21 +122,21 @@ def update_student_info(file_path, teacher, project):
 def generate_stu_directory(student, teacher, project, module):
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info)
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project),module),student_info)
     return file_directory
 
 # 生成一个文件夹路径，方便接下来判断目录是否为空，从而判断用户是否提交了文件
 def generate_stu_doc_directory(student, teacher, project, module):
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info),'docs')
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project),module),student_info),'docs')
     return file_directory
 
 # 生成一个文件夹路径，方便接下来判断目录是否为空，从而判断用户是否提交了附件
 def generate_stu_extend_directory(student, teacher, project, module):
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project),module),student_info),'extends')
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project),module),student_info),'extends')
     return file_directory
 
 # 在所给文件夹的上一级目录下新建一个【文件夹名_zip】目录，将该文件夹压缩后放到此目录中(返回target_path)
@@ -160,7 +160,7 @@ def generate_zip_file(student, teacher, project, module):
 # 生成快速计算某文档的文件路径
 def genetate_quick_cal_path(teacher, filename):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),'quick_cal')
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),'quick_cal')
     file_path = os.path.join(file_directory, filename)
     return file_path
 
@@ -176,18 +176,18 @@ def is_empty(directory_path):
 
 def update_project_name(teacher, project_old_name, project_new_name):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    old_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project_old_name)
-    new_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project_new_name)
+    old_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project_old_name)
+    new_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project_new_name)
     os.rename(old_directory, new_directory)
 
 def delete_module_directory(teacher, project_name, module_name):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'),teacher_info),project_name),module_name)
+    directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'),teacher_info),project_name),module_name)
     shutil.rmtree(directory, ignore_errors=True)
 
 def delete_project_directory(teacher, project_name):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name)
+    directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'),'upload_data'),teacher_info),project_name)
     shutil.rmtree(directory, ignore_errors=True)
 
 def delete_extends_directory(teacher, student, project_name, module_name):
@@ -221,7 +221,7 @@ def get_filelist(directory_path, file_type, user_id, module_id):
 def get_similarity_list_stu(student, teacher, project_name, module_name):
     student_info = '{}-{}'.format(student.name, student.account)
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module_name)
+    artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'),'upload_data'),teacher_info),project_name),module_name)
     similarity_calculator = SimilarityCalculator(artical_directory, is_quick=False, project_name=project_name, module_name=module_name)
     similarity_list = similarity_calculator.get_stu_top_10(student_info=student_info)
     return similarity_list
@@ -229,7 +229,7 @@ def get_similarity_list_stu(student, teacher, project_name, module_name):
 # 获取提交式项目结果列表(已通过测试)
 def get_similarity_list_tea(teacher, project_name, module):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module.name)
+    artical_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'),'upload_data'),teacher_info),project_name),module.name)
     similarity_calculator = SimilarityCalculator(artical_directory, is_quick=False, project_name=project_name, module_name=module.name)
     similarity_list = similarity_calculator.get_top_200()
     for similarity in similarity_list:
@@ -240,7 +240,7 @@ def get_similarity_list_tea(teacher, project_name, module):
 # 获取快速计算结果列表(已通过测试)
 def get_quick_similarity_list(teacher):
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    artical_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'), 'upload_data'), teacher_info), 'quick_cal')
+    artical_directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'), 'upload_data'), teacher_info), 'quick_cal')
     similarity_calculator = SimilarityCalculator(artical_directory=artical_directory, is_quick=True)
     similarity_list = similarity_calculator.get_top_200()
     for similarity in similarity_list:

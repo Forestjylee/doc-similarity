@@ -6,12 +6,13 @@ by: Junyi
 '''
 import jieba as jb
 import redis
+import os
 
 # save_to_redis(部署时)将分词的结果保存至redis数据库
 
 class WordSegmenter(object):
 
-    def __init__(self, stop_word_path="stopWords.txt"):
+    def __init__(self, stop_word_path=os.path.join(os.path.join(os.path.abspath('.'),"static"),"stopWords.txt")):
         self.redis_handler = redis.Redis(host='localhost', port=6379, db=5)
         self.stop_word_path = stop_word_path
         self.stop_word_list = self.get_stop_word_list(self.stop_word_path)

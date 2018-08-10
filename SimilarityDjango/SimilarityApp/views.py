@@ -282,7 +282,7 @@ def create_project(request, teacher_id, teacher_name):
                             project.end_date = project_end_date
                         project.save()
                         teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-                        directory = os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name)
+                        directory = os.path.join(os.path.join(os.path.join(os.path.abspath('.'),'upload_data'),teacher_info),project_name)
                         os.makedirs(directory, exist_ok=True)
                         return render(request, 'SimilarityApp/create_project.html', {'create_status':'创建成功!'})
                     except:
@@ -317,7 +317,7 @@ def create_module(request, project_id, project_name):
                         module.save()
                         teacher = project.teacher
                         teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-                        directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project_name),module_name)
+                        directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'),'upload_data'),teacher_info),project_name),module_name)
                         os.makedirs(directory, exist_ok=True)
                         return render(request, 'SimilarityApp/create_module.html', {'create_status': '创建成功!'})
                     except:
@@ -452,7 +452,7 @@ def download_doc(request, student_info, module_id):
     project = module.project
     teacher = project.teacher
     teacher_info = '{}-{}'.format(teacher.name, teacher.account)
-    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('..'),'upload_data'),teacher_info),project.name),module.name),student_info),'docs')
+    file_directory = os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.join(os.path.abspath('.'),'upload_data'),teacher_info),project.name),module.name),student_info),'docs')
     try:
         filename = os.listdir(file_directory)[0]
         file_path = os.path.join(file_directory, filename)
