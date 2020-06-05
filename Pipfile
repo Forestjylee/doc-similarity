@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 jieba = "*"
 python-docx = "*"
-django = "==2.0.5"
+django = "==2.2.13"
 redis = "*"
 django-redis = "*"
 pymysql = "*"
